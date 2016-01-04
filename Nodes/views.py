@@ -33,10 +33,11 @@ def get_links(context, identifier, provider='text'):
         if os.path.isdir(identifier):
             filelist = os.listdir(identifier)
             for item in filelist:
-                full_path = identifier + os.sep + item
+                full_path = identifier + item
                 new_item = Link(node1=identifier, provider1='file', node2=full_path, provider2='file')
                 if os.path.isdir(full_path):
                     new_item.relation = 'folder'
+                    new_item.node2 += os.sep
                 else:
                     new_item.relation = 'file'
                 context['links'].append(new_item)
