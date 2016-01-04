@@ -28,3 +28,23 @@ def text_node(request, id):
 	ctx['linked_nodes'] = Node.objects.filter(id__in=ids)
 	ctx['links'] = links
 	return render(request, 'text_node.html', ctx)
+
+def file_node(request, id):
+	ctx = {}
+	import os
+	if os.path.exists(id):
+		ctx['path'] = id
+		ctx['file'] = os.path.basename(id)
+		ctx['node'] = os.stat(id)
+		if os.path.isdir(id):
+			filelist = os.listdir(id)
+			ctx['filelist'] = []
+			for item in filelist:
+				full_path = id + os.sep + item
+				new_item = {'name': item, 'path': full_path}
+				if os.path.isdir(full_path):
+					new_item['type'] = 'dir'
+				else:
+					new_item['type'] = 'file'
+				ctx['filelist'].append(new_item)
+	return render(request, 'file_node.html', ctx)

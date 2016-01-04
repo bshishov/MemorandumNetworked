@@ -1,0 +1,10 @@
+file NODE<br/>
+{{ path }}<br/>
+{{ file }}<br/>
+{{ node }}<br/>
+
+{% for item in filelist %}
+	{{ item.name }} -
+	{{ item.path }} - 
+	{{ item.type }}<br/>
+{% endfor %}

@@ -18,6 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
 	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
+	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
 
     url(r'^admin/', admin.site.urls),
 ]
