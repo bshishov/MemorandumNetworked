@@ -17,16 +17,19 @@ def get_int_param(request, param_name):
     param_name = request.query_params.get(param_name)
     return int(param_name) if param_name else 0
 
+def get_links(context, identifier):
+	links = Link.objects.filter(node1=identifier)
+	ids = links.values_list('id', flat=True)
+	context['linked_nodes'] = Node.objects.filter(id__in=ids)
+	context['links'] = list(links)
+	return context
 
 # Create your views here.
 
 def text_node(request, id):
 	ctx = {}
 	ctx['node'] = get_object_or_404(Node, id=id)
-	links = Link.objects.filter(node1=id)
-	ids = links.values_list('id', flat=True)
-	ctx['linked_nodes'] = Node.objects.filter(id__in=ids)
-	ctx['links'] = links
+	ctx = get_links(ctx, id)
 	return render(request, 'text_node.html', ctx)
 
 def file_node(request, id):
@@ -36,15 +39,15 @@ def file_node(request, id):
 		ctx['path'] = id
 		ctx['file'] = os.path.basename(id)
 		ctx['node'] = os.stat(id)
+		ctx = get_links(ctx, id)
 		if os.path.isdir(id):
 			filelist = os.listdir(id)
-			ctx['filelist'] = []
 			for item in filelist:
 				full_path = id + os.sep + item
-				new_item = {'name': item, 'path': full_path}
+				new_item = Link(node1=id, provider1='file', node2=full_path, provider2='file')
 				if os.path.isdir(full_path):
-					new_item['type'] = 'dir'
+					new_item.relation = 'folder'
 				else:
-					new_item['type'] = 'file'
-				ctx['filelist'].append(new_item)
+					new_item.relation = 'file'
+				ctx['links'].append(new_item)
 	return render(request, 'file_node.html', ctx)

@@ -3,8 +3,8 @@ file NODE<br/>
 {{ file }}<br/>
 {{ node }}<br/>
 
-{% for item in filelist %}
-	{{ item.name }} -
-	{{ item.path }} - 
-	{{ item.type }}<br/>
+{% for item in links %}
+	{{ item.node2 }} -
+	{{ item.provider2 }} - 
+	{{ item.relation }}<br/>
 {% endfor %}
