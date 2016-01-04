@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect, get_list_or_404, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -88,8 +88,20 @@ def group_links(context):
 def text_node(request, id):
     ctx = {}
     ctx['node'] = get_object_or_404(Node, id=id)
+    if request.method == 'POST':
+        ctx['node'].text = request.POST.get('text')
+        ctx['node'].save()
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
     ctx = group_links(get_links(ctx, id))
     return render(request, 'text_node.html', ctx)
+
+def add_text_node(request):
+    ctx = {}
+    if request.method == 'POST':
+        node = Node(text=request.POST.get('text'))
+        node.save()
+        return HttpResponseRedirect('/text/%i' % node.id)
+    return render(request, 'add_text_node.html', ctx)
 
 def file_node(request, id):
     ctx = {}
