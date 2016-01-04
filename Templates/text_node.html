@@ -1,6 +1,14 @@
 Text NODE
-{{ node.id }}
-{{ node.text }}
+{{ node.id }}<br/>
+{{ node.text }}<br/>
 
-{{ linked_nodes }}
 {{ links }}
+
+{% for items in links.values %}
+	{% for item in items %}
+		{{ item.node2 }} -
+		{{ item.provider2 }} - 
+		{{ item.content }} - 
+		{{ item.relation }}<br/>
+	{% endfor %}
+{% endfor %}

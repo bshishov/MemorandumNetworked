@@ -3,8 +3,14 @@ file NODE<br/>
 {{ file }}<br/>
 {{ node }}<br/>
 
-{% for item in links %}
-	{{ item.node2 }} -
-	{{ item.provider2 }} - 
-	{{ item.relation }}<br/>
+{{ links }}
+
+{% for items in links.values %}
+	{% for item in items %}
+		<p><a href='/{{ item.provider2 }}/{{ item.node2 }}'>
+		{{ item.node2 }}</a></p> -
+		{{ item.content }} - 
+		{{ item.provider2 }} - 
+		{{ item.relation }}<br/>
+	{% endfor %}
 {% endfor %}
