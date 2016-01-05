@@ -47,7 +47,9 @@ def get_links_descriptions(context):
                     link.content = {'title': node.text, 'details': node.text, 'image': 'none_image'}
                     break
         elif link.provider2 == 'file':
-            link.content = {'title': link.node2, 'details': os.stat(link.node2), 'image': 'none_image'}
+            if os.path.exists(link.node2):
+                stat = os.stat(link.node2)
+            link.content = {'title': link.node2, 'details': None, 'image': 'none_image'}
         elif link.provider2 == 'url':
             import urllib3
             from bs4 import BeautifulSoup
