@@ -20,7 +20,22 @@
     <script src="{% static 'js/main.js' %}"></script> 
 </head>
 <body>
+    <nav>
+        <div class="nav-wrapper">
+
+          <a href="#" class="brand-logo">&nbsp;Memorandum</a>
+
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="/"><i class="material-icons">home</i></a></li>
+            <li><a href="/logout"><i class="material-icons">exit_to_app</i></a></li>                      
+          </ul>
+        </div>
+      </nav>
+
     <div class="wrapper section group">
+
+        
+
         <div class="content">
             {% block content %}Nothing here.{% endblock %}    
         </div>        

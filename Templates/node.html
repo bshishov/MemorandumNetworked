@@ -1,29 +1,32 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <article class="node_content">    
-    {% block node_content %}{% endblock %}    
-    </article>    
-  
-    {% for key,items in links.items %}          
-        {% if key != 'ungrouped' %}
-        <h3>{{ key }}</h3>  
-        {% endif %}
-        {% if items %}
-            <ul class="collection">        
+    <div class="row">
+        <div class="card">
+        {% block node_content %}{% endblock %}        
+        </div>   
+    </div>
+    {% for key,items in links.items %}                  
+        {%if items%}
+            <div class="row">
+            {% if key != 'ungrouped' %}
+                <h5>{{ key }}{{ items|length|pluralize }}</h5>
+            {% endif %}
+            <ul class="collection"> 
             {% for item in items %}
                 <li class="collection-item avatar">
                     <i class="material-icons circle">{{ item.relation }}</i>
                     <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2 }}">{{ item.content.title }}</a></span>
                     <p>{{ item.content.details }}</p>
+                    <p>{{ item.relation }}</p>
                     {% if item.id %}
                     <a href="/links/{{ item.id }}/remove" class="secondary-content"><i class="material-icons">remove_circle</i></a>
                     {% endif %}
                 </li>
             {% endfor %}
             </ul>
-        {% endif %}
-        <br>
+        </div>
+        {% endif %}        
     {% endfor %}
 
 {% endblock %}
