@@ -11,8 +11,11 @@
             <div class="section">
             {% if key != 'ungrouped' %}
                 <h5>{{ key }}{{ items|length|pluralize }}</h5>
+                {% include 'Blocks/add_buttons.html' with relation=key %}
+            {% else %}
+                {% include 'Blocks/add_buttons.html' %}
             {% endif %}
-            {% include 'Blocks/add_buttons.html' %}
+            
             <ul class="collection"> 
             {% for item in items %}
                 <li class="collection-item avatar">
