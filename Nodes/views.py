@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 import json
 import os
 
-from Nodes.models import Node, Link
+from Nodes.models import Node, Link, Url
 from helpers import *
 
 def get_links(context, identifier, provider='text'):
@@ -52,10 +52,10 @@ def get_links_descriptions(context):
             link.content = {'title': os.path.basename(link.node2), 'details': None, 'image': 'none_image'}
         elif link.provider2 == 'url':
             url = Url.objects.get(url=link.node2)
-            if url is not None:
+            if url is None:
                 link.content = {'title': link.node2, 'details': 'missing node', 'image': 'missing node'}
             else:
-                link.content = {'title': link.node2, 'details': url.title, 'image': url.image}
+                link.content = {'title': link.node2, 'details': url.name, 'image': url.image}
     return context
 
 def group_links(context):
@@ -135,7 +135,7 @@ def add_node(request):
             link.save()
         elif provider == 'url':
             url_text = request.POST.get('url')
-            url = Node(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
+            url = Url(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
             url.save()
             link = Link(node1=parent_node_id, provider1=parent_node_provider)
             link.node2 = url_text
@@ -173,7 +173,7 @@ def get_url_title(url):
     try:
         import urllib3
         from bs4 import BeautifulSoup
-        soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', link.node2))
+        soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', url))
         title = soup.title.string
     except:
         title = url
@@ -188,8 +188,8 @@ def make_url_screenshot(url):
         path_to_screen = os.path.join(settings.MEDIA_ROOT, str(time.time()) + '.png')
         with ghost.start() as session:
             session.open(url)
-            session.set_viewport_size(1600, 1000)
-            session.capture_to(path_to_screen, (0, 0, 1600, 1000))
+            session.set_viewport_size(1600, 1600)
+            session.capture((0, 0, 1600, 1600)).scaled(150, 150).save(path_to_screen)
     except:
         path_to_screen = ''
     return path_to_screen

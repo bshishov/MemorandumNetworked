@@ -15,4 +15,4 @@ class Link(models.Model):
 class Url(models.Model):
 	url = models.CharField(max_length=1000)
 	name = models.CharField(max_length=1000)
-	image = models.CharField(max_length=1000)
+	image = models.CharField(max_length=1000, blank=True, null=True)
