@@ -7,22 +7,7 @@ import json
 import os
 
 from Nodes.models import Node, Link
-
-def render(request, path, context = {}):
-    return render_to_response(path, context, RequestContext(request))
-
-def render_json(context):
-    return HttpResponse(json.dumps(context), content_type = 'application/json')
-
-def get_int_param(request, param_name):
-    param_name = request.query_params.get(param_name)
-    return int(param_name) if param_name else 0
-
-def try_parse_int(s, base=10, val=None):
-    try:
-        return int(s, base)
-    except ValueError:
-        return val
+from helpers import *
 
 def get_links(context, identifier, provider='text'):
     context['links'] = []
@@ -64,7 +49,10 @@ def get_links_descriptions(context):
         elif link.provider2 == 'file':
             link.content = {'title': link.node2, 'details': os.stat(link.node2), 'image': 'none_image'}
         elif link.provider2 == 'url':
-            link.content = {'title': link.node2, 'details': 'none_details', 'image': 'none_image'}
+            import urllib3
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', link.node2))
+            link.content = {'title': link.node2, 'details': soup.title.string, 'image': 'none_image'}
     return context
 
 def group_links(context):
@@ -85,6 +73,35 @@ def group_links(context):
 
 # Create your views here.
 
+@require_login(url='/login/')
+def index(request):
+    return text_node(request, 1)
+
+@unauthenticated_only(url='/')
+def login(request):
+    ctx = {}
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        from django.contrib.auth import authenticate, login
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('/')
+            else:
+                return redirect('/login?error=inactive')
+        else:
+            return redirect('/login?error=incorrect')
+    return render(request, 'login.html', ctx)
+
+@require_login(url='/')
+def logout(request):
+    from django.contrib.auth import logout
+    logout(request)
+    return redirect('/')
+
+@require_login(url='/login/')
 def text_node(request, id):
     ctx = {}
     ctx['node'] = get_object_or_404(Node, id=id)
@@ -95,6 +112,7 @@ def text_node(request, id):
     ctx = group_links(get_links(ctx, id))
     return render(request, 'text_node.html', ctx)
 
+@require_login(url='/login/')
 def add_text_node(request):
     ctx = {}
     if request.method == 'POST':
@@ -103,6 +121,15 @@ def add_text_node(request):
         return HttpResponseRedirect('/text/%i' % node.id)
     return render(request, 'add_text_node.html', ctx)
 
+@require_login(url='/login/')
+def delete_link(request, id):
+    ctx = {}
+    link = Link.objects.get(id=id)
+    if link is not None:
+        link.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@require_login(url='/login/')
 def file_node(request, id):
     ctx = {}
     if os.path.exists(id):
