@@ -10,7 +10,9 @@
         <a class="waves-effect btn-floating" href="javascript://" id="save-button"><i class="material-icons">save</i></a>
     </div>   
     <script type="text/javascript">
-        $('#text-content').trumbowyg();
+        $('#text-content').trumbowyg({
+            autogrow: true
+        });
         $("#save-button").on("click", function(){
             $("#text-field").val($("#text-content").html());
             $("#text-form").submit();   
