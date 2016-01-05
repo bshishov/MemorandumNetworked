@@ -7,7 +7,7 @@
     <div class="card">    
         <div class="card-content">
             Mime: {{mime}}<br/>
-            {{ node.st_size }} bytes <br>            
+            {{ node.st_size|filesizeformat }}<br>            
             Last access: {{ node.st_atime|fromtimestamp|date:"D d M Y" }} <br>
             Last change: {{ node.st_mtime|fromtimestamp|date:"D d M Y" }} <br>
             <!-- http://www.tutorialspoint.com/python/os_stat.htm -->
