@@ -1,16 +1,8 @@
-file NODE<br/>
-{{ path }}<br/>
-{{ file }}<br/>
-{{ node }}<br/>
+{% extends 'node.html' %}
 
-{{ links }}
-
-{% for items in links.values %}
-	{% for item in items %}
-		<p><a href='/{{ item.provider2 }}/{{ item.node2 }}'>
-		{{ item.node2 }}</a></p> -
-		{{ item.content }} - 
-		{{ item.provider2 }} - 
-		{{ item.relation }}<br/>
-	{% endfor %}
-{% endfor %}
+{% block node_content %}
+    file NODE<br/>
+    {{ path }}<br/>
+    {{ file }}<br/>
+    {{ node }}<br/>
+{% endblock %}

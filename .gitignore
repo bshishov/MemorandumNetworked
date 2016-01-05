@@ -60,3 +60,5 @@ docs/_build/
 target/
 
 local_settings.py
+
+/files/

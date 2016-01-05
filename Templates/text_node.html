@@ -1,14 +1,8 @@
-Text NODE
-{{ node.id }}<br/>
-{{ node.text }}<br/>
+{% extends 'node.html' %}
 
-{{ links }}
-
-{% for items in links.values %}
-	{% for item in items %}
-		{{ item.node2 }} -
-		{{ item.provider2 }} - 
-		{{ item.content }} - 
-		{{ item.relation }}<br/>
-	{% endfor %}
-{% endfor %}
+{% block node_content %}    
+    <div contenteditable="true" id="content">{{ node.text }}</div>    
+    <script type="text/javascript">
+        CKEDITOR.inline( 'content' );
+    </script>
+{% endblock %}

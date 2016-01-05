@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Memorandum</title>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      
+    <link rel="stylesheet" type="text/css" href="{% static 'css/materialize.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+
+    
+    <script src="//cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script> 
+    <script src="{% static 'js/materialize.min.js' %}"></script> 
+    <script src="{% static 'js/main.js' %}"></script> 
+</head>
+<body>
+    <div class="wrapper section group">
+        <div class="content">
+            {% block content %}Nothing here.{% endblock %}    
+        </div>        
+    </div>    
+</body>
+</html>
