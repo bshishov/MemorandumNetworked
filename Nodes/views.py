@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, render_to_response, redirect, get_list_or_404, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -50,7 +50,7 @@ def get_links_descriptions(context):
             if os.path.isdir(link.node2):
                 title = link.node2.split(os.sep)[-2] + os.sep
             else:
-                title = os.path.basename(link.node2)
+                title = get_filename(link.node2)
             if os.path.exists(link.node2):
                 stat = os.stat(link.node2)
             link.content = {'title': title, 'details': None, 'image': ''}
@@ -147,6 +147,8 @@ def add_node(request):
                 title, image = get_url_info(url_text, url_hash)
                 url = Url(url=url_text, name=title, image=image)
                 url.url_hash = url_hash
+
+
                 url.save()
             except:
                 url = Url.objects.get(url_hash=url_hash)
@@ -161,6 +163,34 @@ def add_node(request):
                 os.mkdir(new_path)
         make_relation_back(link, relation_back)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@require_login(url='/')
+def download_file(request, id):
+    if os.path.isdir(id):
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    else:
+        response = HttpResponse(content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % get_filename(id)
+        response['X-Sendfile'] = get_filename(id)
+        f = open(id, 'rb')
+        response.write(f.read())
+        f.close()
+        # It's usually a good idea to set the 'Content-Length' header too.
+        # You can also set any other required headers: Cache-Control, etc.
+        return response
+
+@require_login(url='/')
+def open_file(request, id):
+    if os.path.isdir(id):
+        raise Http404
+    from mimetypes import MimeTypes
+    mime = MimeTypes()
+    mimetype = mime.guess_type(id)
+    response = HttpResponse(content_type=mimetype[0])
+    f = open(id, 'rb')
+    response.write(f.read())
+    f.close()
+    return response
 
 @require_login(url='/login/')
 def delete_link(request, id):
@@ -180,7 +210,21 @@ def file_node(request, id):
         ctx['file'] = os.path.basename(id)
         ctx['node'] = os.stat(id)
         ctx = group_links(get_links(ctx, id, 'file'))
-    return render(request, 'file_node.html', ctx)
+
+        from mimetypes import MimeTypes
+        mime = MimeTypes()
+        mimetype = mime.guess_type(id)
+        managed_mimes = ['text', 'image', 'video', 'audio']
+        ctx['mime'] = mimetype[0]
+        base_type = None
+        if ctx['mime'] is not None:
+            base_type = ctx['mime'].split('/')[0]
+        if os.path.isdir(id) or base_type not in managed_mimes:
+            return render(request, 'file_node.html', ctx)
+        else:
+            return render(request, 'Files/%s.html' % base_type, ctx)
+    else:
+        raise Http404
 
 def get_url_info(url, url_hash):
     path_to_screen = ''

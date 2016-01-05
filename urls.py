@@ -23,9 +23,12 @@ urlpatterns = [
 	url(r'^login', 'Nodes.views.login'),
 	url(r'^logout', 'Nodes.views.logout'),
 
-	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
 	url(r'^add', 'Nodes.views.add_node'),
 
+	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
+
+	url(r'^file/raw/(?P<id>.+)', 'Nodes.views.open_file'),
+	url(r'^file/download/(?P<id>.+)', 'Nodes.views.download_file'),
 	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
 
 	url(r'^links/(?P<id>\d+)/remove', 'Nodes.views.delete_link'),
@@ -33,3 +36,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^test/', 'Nodes.views.test'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

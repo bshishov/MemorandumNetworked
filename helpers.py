@@ -77,3 +77,9 @@ def unauthenticated_only(function=None, url='/'):
     if function:
         return _decorator(function)
     return _decorator
+
+def get_filename(path):
+    import os
+    if os.path.isdir(path):
+        return ''
+    return path.split(os.sep)[-1]
