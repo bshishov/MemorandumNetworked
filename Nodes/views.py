@@ -217,8 +217,9 @@ def file_node(request, id):
         managed_mimes = ['text', 'image', 'video', 'audio']
         ctx['mime'] = mimetype[0]
         base_type = None
-        if ctx['mime'] is not None:
-            base_type = ctx['mime'].split('/')[0]
+        if ctx['mime'] is None:
+            ctx['mime'] = 'text/binary'
+        base_type = ctx['mime'].split('/')[0]
         if os.path.isdir(id) or base_type not in managed_mimes:
             return render(request, 'file_node.html', ctx)
         else:
