@@ -1,15 +1,24 @@
 {% extends 'node.html' %}
+{% load timestamp_to_time %}
 
 {% block node_content %}
     <h2>{{ file }}</h2>
     <p>{{ path }}</p>
     <div class="card">    
         <div class="card-content">
-            <p>{{ node }}</p>
+            Mime: {{mime}}<br/>
+            {{ node.st_size }} bytes <br>            
+            Last access: {{ node.st_atime|fromtimestamp|date:"D d M Y" }} <br>
+            Last change: {{ node.st_mtime|fromtimestamp|date:"D d M Y" }} <br>
+            <!-- http://www.tutorialspoint.com/python/os_stat.htm -->
+            <!-- {{ node }} -->
         </div>
     </div>    
 
-
+    <!-- FILE content -->
+    <div class="card">
+    {% block file_content %}{% endblock %}
+    </div>
 
     <div class="right-align">           
         <a class="waves-effect btn-flat" href="/file/raw/{{path|urlencode}}"><i class="material-icons left">remove_red_eye</i> Raw</a>
