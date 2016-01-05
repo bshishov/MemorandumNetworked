@@ -24,11 +24,12 @@ urlpatterns = [
 	url(r'^logout', 'Nodes.views.logout'),
 
 	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
-	url(r'^text/add', 'Nodes.views.add_text_node'),
+	url(r'^text/add', 'Nodes.views.add_node'),
 
 	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
 
 	url(r'^links/(?P<id>\d+)/remove', 'Nodes.views.delete_link'),
 
     url(r'^admin/', admin.site.urls),
+    url(r'^test/', 'Nodes.views.test'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
