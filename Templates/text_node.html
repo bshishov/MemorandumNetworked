@@ -1,16 +1,19 @@
 {% extends 'node.html' %}
 
 {% block node_content %}    
-    <div contenteditable="true" id="content" class="card-content">{{ node.text|safe }}</div> 
+    <div class="card-content">
+        <form method="post" id="text-form">
+            <div id="text-field">{{ node.text|safe }}</div>
+            {% csrf_token %}
+        </form>
+    </div>    
     <div class="card-action">
         <a class="waves-effect btn-floating" href="javascript://" id="save-button"><i class="material-icons">save</i></a>
-    </div>
-    <form method="post" id="text-form">
-        {% csrf_token %}
-        <input type="hidden" name="text" id="text-field" />
-    </form>
+    </div>   
     <script type="text/javascript">
-        CKEDITOR.inline( 'content' );
+        tinymce.init({ 
+            selector:'#text-field',
+            inline: true });       
         $("#save-button").on("click", function(){
             $("#text-field").val($("#content").html());
             $("#text-form").submit();   

@@ -16,8 +16,8 @@
             {% for item in items %}
                 <li class="collection-item avatar">
                     <i class="material-icons circle">{{ item.relation }}</i>
-                    <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2 }}">{{ item.content.title }}</a></span>
-                    <p>{{ item.content.details }}</p>
+                    <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2 }}">{{ item.content.title|striptags }}</a></span>
+                    <p>{{ item.content.details|striptags  }}</p>
                     <p>{{ item.relation }}</p>
                     {% if item.id %}
                     <a href="/links/{{ item.id }}/remove" class="secondary-content"><i class="material-icons">remove_circle</i></a>
