@@ -1,8 +1,19 @@
 {% extends 'node.html' %}
 
 {% block node_content %}
-    file NODE<br/>
-    {{ path }}<br/>
-    {{ file }}<br/>
-    {{ node }}<br/>
+    <h2>{{ file }}</h2>
+    <p>{{ path }}</p>
+    <div class="card">    
+        <div class="card-content">
+            <p>{{ node }}</p>
+        </div>
+    </div>    
+
+
+
+    <div class="right-align">           
+        <a class="waves-effect btn-flat" href="/file/raw/{{path|urlencode}}"><i class="material-icons left">remove_red_eye</i> Raw</a>
+        <a class="waves-effect btn-flat" href="/file/download/{{path|urlencode}}"><i class="material-icons left">file_download</i> Download</a>
+        <a class="waves-effect btn-flat" href="javascript://"><i class="material-icons left">delete</i> Delete</a>
+    </div> 
 {% endblock %}

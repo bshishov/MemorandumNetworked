@@ -1,8 +1,8 @@
 {% for key,items in links.items %}       
 <div class="section">
     {% if key != 'ungrouped' %}
-        <h5>{{ key }}{{ items|length|pluralize }}</h5>
-        {% include 'Blocks/add_buttons.html' with relation=key %}
+        <h5>{{ key|capfirst }}{{ items|length|pluralize }}
+        {% include 'Blocks/add_buttons.html' with relation=key %}</h5>
     {% else %}
         {% include 'Blocks/add_buttons.html' %}
     {% endif %}
@@ -23,11 +23,12 @@
                     <i class="material-icons circle">message</i>
                     {% endif %}
                 {% endif %}
+                <span class="title">{{ item.relation|capfirst }}</span>
                 <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}">{{ item.content.title|striptags|truncatechars:140 }}</a></span>
                 <p>{{ item.content.details|striptags|truncatechars:140  }}</p>
-                <p>{{ item.relation }}</p>
+                
                 {% if item.id %}
-                <a href="/links/{{ item.id }}/remove" class="secondary-content"><i class="material-icons">remove_circle</i></a>
+                <a href="/links/{{ item.id }}/remove" title="Unlink" class="secondary-content"><i class="material-icons">remove_circle_outline</i></a>
                 {% endif %}
             </li>
         {% endfor %}
