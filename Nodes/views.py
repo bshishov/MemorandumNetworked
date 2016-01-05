@@ -135,8 +135,11 @@ def add_node(request):
             link.save()
         elif provider == 'url':
             url_text = request.POST.get('url')
-            url = Url(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
-            url.save()
+            try:
+                url = Url.objects.get(url=url_text)
+            except:
+                url = Url(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
+                url.save()
             link = Link(node1=parent_node_id, provider1=parent_node_provider)
             link.node2 = url_text
             link.provider2 = 'url'
