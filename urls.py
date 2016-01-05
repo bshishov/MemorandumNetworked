@@ -17,6 +17,10 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
+	url(r'^$', 'Nodes.views.index'),
+	url(r'^login', 'Nodes.views.login'),
+	url(r'^logout', 'Nodes.views.logout'),
+
 	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
 	url(r'^text/add', 'Nodes.views.add_text_node'),
 
