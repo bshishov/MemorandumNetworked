@@ -1,6 +1,7 @@
 <div id="textform" class="modal bottom-sheet">
     <div class="modal-content">
         <form class="col s12" method="post" action="add">
+            {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="text" />
@@ -35,6 +36,7 @@
 <div id="urlform" class="modal bottom-sheet">
     <div class="modal-content">
         <form class="col s12" method="post" action="add">
+            {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="url" />
@@ -72,6 +74,7 @@
 <div id="fileform" class="modal bottom-sheet">
     <div class="modal-content">
         <form class="col s12" method="post" action="add">
+            {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="file" />
@@ -110,6 +113,7 @@
 <div id="folderform" class="modal bottom-sheet">
     <div class="modal-content">
         <form class="col s12" method="post" action="add">
+            {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="file" />
