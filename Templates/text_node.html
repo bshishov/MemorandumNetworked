@@ -1,13 +1,11 @@
 {% extends 'node.html' %}
 
-{% block node_content %}    
-    <div class="card-content">
-        <form method="post" id="text-form" style="display:none;">
-            <input type="hidden" id="text-field" />            
-            {% csrf_token %}
-        </form>
-        <div id="text-content">{{ node.text|safe }}</div>
-    </div>    
+{% block node_content %}        
+    <form method="post" id="text-form" style="display:none;">
+        <input type="hidden" id="text-field" />            
+        {% csrf_token %}
+    </form>
+    <div id="text-content">{{ node.text|safe }}</div>      
     <div class="card-action">
         <a class="waves-effect btn-floating" href="javascript://" id="save-button"><i class="material-icons">save</i></a>
     </div>   
