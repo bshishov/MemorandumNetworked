@@ -44,16 +44,20 @@ def get_links_descriptions(context):
                 continue
             for node in linked_nodes:
                 if connected_id == node.id:
-                    link.content = {'title': node.text, 'details': node.text, 'image': 'none_image'}
+                    link.content = {'title': node.text, 'details': node.text, 'image': ''}
                     break
         elif link.provider2 == 'file':
+            if os.path.isdir(link.node2):
+                title = link.node2.split(os.sep)[-2] + os.sep
+            else:
+                title = os.path.basename(link.node2)
             if os.path.exists(link.node2):
                 stat = os.stat(link.node2)
-            link.content = {'title': os.path.basename(link.node2), 'details': None, 'image': 'none_image'}
+            link.content = {'title': title, 'details': None, 'image': ''}
         elif link.provider2 == 'url':
             url = Url.objects.get(url=link.node2)
             if url is None:
-                link.content = {'title': link.node2, 'details': 'missing node', 'image': 'missing node'}
+                link.content = {'title': link.node2, 'details': 'missing node', 'image': ''}
             else:
                 link.content = {'title': link.node2, 'details': url.name, 'image': url.image}
     return context
@@ -135,11 +139,17 @@ def add_node(request):
             link.save()
         elif provider == 'url':
             url_text = request.POST.get('url')
+            import hashlib
+            m = hashlib.md5()
+            m.update(url_text.encode('utf-8'))
+            url_hash = m.hexdigest()
             try:
-                url = Url.objects.get(url=url_text)
-            except:
-                url = Url(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
+                title, image = get_url_info(url_text, url_hash)
+                url = Url(url=url_text, name=title, image=image)
+                url.url_hash = url_hash
                 url.save()
+            except:
+                url = Url.objects.get(url_hash=url_hash)
             link = Link(node1=parent_node_id, provider1=parent_node_provider)
             link.node2 = url_text
             link.provider2 = 'url'
@@ -172,30 +182,22 @@ def file_node(request, id):
         ctx = group_links(get_links(ctx, id, 'file'))
     return render(request, 'file_node.html', ctx)
 
-def get_url_title(url):
-    try:
-        import urllib3
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', url))
-        title = soup.title.string
-    except:
-        title = url
-    return title
+def get_url_info(url, url_hash):
+    path_to_screen = ''
+    title = url
 
-def make_url_screenshot(url):
-    try:
-        from ghost import Ghost
-        ghost = Ghost()
-        import settings
-        import time
-        path_to_screen = os.path.join(settings.MEDIA_ROOT, str(time.time()) + '.png')
-        with ghost.start() as session:
-            session.open(url)
-            session.set_viewport_size(1600, 1600)
-            session.capture((0, 0, 1600, 1600)).scaled(150, 150).save(path_to_screen)
-    except:
-        path_to_screen = ''
-    return path_to_screen
+    from ghost import Ghost
+    ghost = Ghost()
+    import settings
+    import time
+    path_to_screen = os.path.join(settings.MEDIA_URL, url_hash + '.png')
+    with ghost.start() as session:
+        session.set_viewport_size(1600, 1600)
+        session.open(url)
+        title, attrs = session.evaluate('document.title')
+        from settings import SCREENSHOT_SIZE
+        session.capture((0, 0, 1600, 1600)).scaled(SCREENSHOT_SIZE, SCREENSHOT_SIZE).save(path_to_screen)
+    return (title, path_to_screen)
 
 def make_relation_back(link, relation_back):
     if link is not None and relation_back != '':
@@ -208,4 +210,5 @@ def make_relation_back(link, relation_back):
         new_link.save()
 
 def test(request):
+    # get_url_info('http://habrahabr.ru', '123')
     return HttpResponse('ok')
