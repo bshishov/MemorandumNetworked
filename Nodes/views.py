@@ -49,12 +49,13 @@ def get_links_descriptions(context):
         elif link.provider2 == 'file':
             if os.path.exists(link.node2):
                 stat = os.stat(link.node2)
-            link.content = {'title': link.node2, 'details': None, 'image': 'none_image'}
+            link.content = {'title': os.path.basename(link.node2), 'details': None, 'image': 'none_image'}
         elif link.provider2 == 'url':
-            import urllib3
-            from bs4 import BeautifulSoup
-            soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', link.node2))
-            link.content = {'title': link.node2, 'details': soup.title.string, 'image': 'none_image'}
+            url = Url.objects.get(url=link.node2)
+            if url is not None:
+                link.content = {'title': link.node2, 'details': 'missing node', 'image': 'missing node'}
+            else:
+                link.content = {'title': link.node2, 'details': url.title, 'image': url.image}
     return context
 
 def group_links(context):
@@ -72,8 +73,6 @@ def group_links(context):
             grouped_links[link.relation].append(link)
     context['links'] = grouped_links
     return context
-
-# Create your views here.
 
 @require_login(url='/login/')
 def index(request):
@@ -106,6 +105,8 @@ def logout(request):
 @require_login(url='/login/')
 def text_node(request, id):
     ctx = {}
+    ctx['id'] = id
+    ctx['provider'] = 'text'
     ctx['node'] = get_object_or_404(Node, id=id)
     if request.method == 'POST':
         ctx['node'].text = request.POST.get('text')
@@ -115,13 +116,38 @@ def text_node(request, id):
     return render(request, 'text_node.html', ctx)
 
 @require_login(url='/login/')
-def add_text_node(request):
+def add_node(request):
     ctx = {}
     if request.method == 'POST':
-        node = Node(text=request.POST.get('text'))
-        node.save()
-        return HttpResponseRedirect('/text/%i' % node.id)
-    return render(request, 'add_text_node.html', ctx)
+        link = None
+        provider = request.POST.get('new_provider')
+        parent_node_id = request.POST.get('parent_id')
+        parent_node_provider = request.POST.get('parent_provider')
+        relation = request.POST.get('relation')
+        relation_back = request.POST.get('relation_back')
+        if provider == 'text':
+            node = Node(text=request.POST.get('text'))
+            node.save()
+            link = Link(node1=parent_node_id, provider1=parent_node_provider)
+            link.node2 = node.id
+            link.provider2 = 'text'
+            link.relation = relation
+            link.save()
+        elif provider == 'url':
+            url_text = request.POST.get('url')
+            url = Node(url=url_text, name=get_url_title(url_text), image=make_url_screenshot(url_text))
+            url.save()
+            link = Link(node1=parent_node_id, provider1=parent_node_provider)
+            link.node2 = url_text
+            link.provider2 = 'url'
+            link.relation = relation
+            link.save()
+        elif provider == 'file':
+            new_path = os.path.join(parent_id, request.POST.get('name'))
+            if os.path.isdir(parent_node_id) and os.path.isdir(new_path):
+                os.mkdir(new_path)
+        make_relation_back(link, relation_back)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/login/')
 def delete_link(request, id):
@@ -134,9 +160,49 @@ def delete_link(request, id):
 @require_login(url='/login/')
 def file_node(request, id):
     ctx = {}
+    ctx['id'] = id
+    ctx['provider'] = 'file'
     if os.path.exists(id):
         ctx['path'] = id
         ctx['file'] = os.path.basename(id)
         ctx['node'] = os.stat(id)
         ctx = group_links(get_links(ctx, id, 'file'))
     return render(request, 'file_node.html', ctx)
+
+def get_url_title(url):
+    try:
+        import urllib3
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', link.node2))
+        title = soup.title.string
+    except:
+        title = url
+    return title
+
+def make_url_screenshot(url):
+    try:
+        from ghost import Ghost
+        ghost = Ghost()
+        import settings
+        import time
+        path_to_screen = os.path.join(settings.MEDIA_ROOT, str(time.time()) + '.png')
+        with ghost.start() as session:
+            session.open(url)
+            session.set_viewport_size(1600, 1000)
+            session.capture_to(path_to_screen, (0, 0, 1600, 1000))
+    except:
+        path_to_screen = ''
+    return path_to_screen
+
+def make_relation_back(link, relation_back):
+    if link is not None and relation_back != '':
+        new_link = Link()
+        new_link.node1 = link.node2
+        new_link.node2 = link.node1
+        new_link.provider1 = link.provider2
+        new_link.provider2 = link.provider1
+        new_link.relation = relation_back
+        new_link.save()
+
+def test(request):
+    return HttpResponse('ok')
