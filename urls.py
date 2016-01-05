@@ -28,5 +28,7 @@ urlpatterns = [
 
 	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
 
+	url(r'^links/(?P<id>\d+)/remove', 'Nodes.views.delete_link'),
+
     url(r'^admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -49,7 +49,10 @@ def get_links_descriptions(context):
         elif link.provider2 == 'file':
             link.content = {'title': link.node2, 'details': os.stat(link.node2), 'image': 'none_image'}
         elif link.provider2 == 'url':
-            link.content = {'title': link.node2, 'details': 'none_details', 'image': 'none_image'}
+            import urllib3
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', link.node2))
+            link.content = {'title': link.node2, 'details': soup.title.string, 'image': 'none_image'}
     return context
 
 def group_links(context):
@@ -72,10 +75,7 @@ def group_links(context):
 
 @require_login(url='/login/')
 def index(request):
-    ctx = {}
-    ctx['node'] = get_object_or_404(Node, id=1)
-    ctx = group_links(get_links(ctx, id))
-    return render(request, 'text_node.html', ctx)
+    return text_node(request, 1)
 
 @unauthenticated_only(url='/')
 def login(request):
@@ -120,6 +120,14 @@ def add_text_node(request):
         node.save()
         return HttpResponseRedirect('/text/%i' % node.id)
     return render(request, 'add_text_node.html', ctx)
+
+@require_login(url='/login/')
+def delete_link(request, id):
+    ctx = {}
+    link = Link.objects.get(id=id)
+    if link is not None:
+        link.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/login/')
 def file_node(request, id):
