@@ -1,0 +1,157 @@
+<div id="textform" class="modal bottom-sheet">
+    <div class="modal-content">
+        <form class="col s12" method="post" action="add">
+            <input type="hidden" name="parent_id" value="{{ id }}" />
+            <input type="hidden" name="parent_provider" value="{{ provider }}" />
+            <input type="hidden" name="new_provider" value="text" />
+
+            <div class="row">                
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_forward</i>
+                    <input type="text" name="relation" placeholder="Relation">
+                    <label for="relation">Relation</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_backward</i>
+                    <input type="text" name="relation_back">
+                    <label for="relation_back">Backward relation</label>
+                </div>
+            </div>
+
+            <div class="row" >
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">message</i>
+                    <textarea name="text" class="materialize-textarea"></textarea>
+                    <label for="text">Text</label>
+                </div>
+            </div>
+            <div class="row">  
+                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+            </div>
+        </form>
+    </div>    
+</div>
+
+<div id="urlform" class="modal bottom-sheet">
+    <div class="modal-content">
+        <form class="col s12" method="post" action="add">
+            <input type="hidden" name="parent_id" value="{{ id }}" />
+            <input type="hidden" name="parent_provider" value="{{ provider }}" />
+            <input type="hidden" name="new_provider" value="url" />
+
+            <div class="row">                
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_forward</i>
+                    <input type="text" name="relation" placeholder="Relation">
+                    <label for="relation">Relation</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_backward</i>
+                    <input type="text" name="relation_back">
+                    <label for="relation_back">Backward relation</label>
+                </div>
+            </div>
+            <div class="row">                
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">link</i>
+                    <input type="text" name="url">
+                    <label for="url">URL</label>
+                </div>
+                 <div class="input-field col s6">
+                    <input type="checkbox" id="download" name="download" />
+                    <label for="download">Should download contents</label>
+                </div>
+            </div>
+            <div class="row">  
+                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="fileform" class="modal bottom-sheet">
+    <div class="modal-content">
+        <form class="col s12" method="post" action="add">
+            <input type="hidden" name="parent_id" value="{{ id }}" />
+            <input type="hidden" name="parent_provider" value="{{ provider }}" />
+            <input type="hidden" name="new_provider" value="file" />
+
+            <div class="row">                
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_forward</i>
+                    <input type="text" name="relation" placeholder="Relation">
+                    <label for="relation">Relation</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_backward</i>
+                    <input type="text" name="relation_back">
+                    <label for="relation_back">Backward relation</label>
+                </div>
+            </div>
+            <div class="row">                
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span>File</span>
+                    <input type="file" name="file" multiple>
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Select one or more files">
+                  </div>
+                </div>
+            </div>
+            <div class="row">  
+                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div id="folderform" class="modal bottom-sheet">
+    <div class="modal-content">
+        <form class="col s12" method="post" action="add">
+            <input type="hidden" name="parent_id" value="{{ id }}" />
+            <input type="hidden" name="parent_provider" value="{{ provider }}" />
+            <input type="hidden" name="new_provider" value="file" />
+
+            <div class="row">                
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_forward</i>
+                    <input type="text" name="relation" placeholder="Relation">
+                    <label for="relation">Relation</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">arrow_backward</i>
+                    <input type="text" name="relation_back">
+                    <label for="relation_back">Backward relation</label>
+                </div>
+            </div>
+            <div class="row">                
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">folder</i>
+                    <input type="text" name="folder">
+                    <label for="folder">Folder Name</label>
+                </div>                
+            </div>
+            <div class="row">  
+                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 
+    parent_id
+    parent_provider
+    new_provider
+    relation
+    relation_back
+
+    text
+
+    url
+
+    folder
+ -->
+
+
