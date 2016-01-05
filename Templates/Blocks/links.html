@@ -1,0 +1,37 @@
+{% for key,items in links.items %}       
+<div class="section">
+    {% if key != 'ungrouped' %}
+        <h5>{{ key }}{{ items|length|pluralize }}</h5>
+        {% include 'Blocks/add_buttons.html' with relation=key %}
+    {% else %}
+        {% include 'Blocks/add_buttons.html' %}
+    {% endif %}
+    {%if items%}   
+        <ul class="collection"> 
+        {% for item in items %}
+            <li class="collection-item avatar">
+                {% if item.content.image %}
+                <img src="{{item.content.image}}" alt="" class="circle">
+                {% else %} 
+                    {% if item.provider2 == "file" %}
+                    <i class="material-icons circle">insert_drive_file</i>
+                    {% elif item.provider2 == "text" %}
+                    <i class="material-icons circle">description</i>
+                    {% elif item.provider2 == "url" %}
+                    <i class="material-icons circle">link</i>
+                    {% else %}
+                    <i class="material-icons circle">message</i>
+                    {% endif %}
+                {% endif %}
+                <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}">{{ item.content.title|striptags|truncatechars:140 }}</a></span>
+                <p>{{ item.content.details|striptags|truncatechars:140  }}</p>
+                <p>{{ item.relation }}</p>
+                {% if item.id %}
+                <a href="/links/{{ item.id }}/remove" class="secondary-content"><i class="material-icons">remove_circle</i></a>
+                {% endif %}
+            </li>
+        {% endfor %}
+        </ul>        
+    {% endif %}  
+</div>      
+{% endfor %}

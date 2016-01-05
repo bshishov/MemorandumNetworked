@@ -1,14 +1,17 @@
 {% extends 'node.html' %}
 
-{% block node_content %}        
+{% block node_content %}       
+   
     <form method="post" id="text-form" style="display:none;">
         <input type="hidden" id="text-field" name="text"/>            
         {% csrf_token %}
     </form>
-    <div id="text-content">{{ node.text|safe }}</div>      
-    <div class="card-action">
-        <a class="waves-effect btn-floating" href="javascript://" id="save-button"><i class="material-icons">save</i></a>
-    </div>   
+    <div class="card">
+        <div id="text-content">{{ node.text|safe }}</div>      
+    </div>    
+    <div class="right-align">           
+        <a class="waves-effect btn-flat" href="javascript://" id="save-button"><i class="material-icons left">save</i> Save</a>
+        <a class="waves-effect btn-flat" href="javascript://"><i class="material-icons left">delete</i> Delete</a></div> 
     <script type="text/javascript">
         $('#text-content').trumbowyg({
             autogrow: true

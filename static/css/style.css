@@ -1,5 +1,5 @@
 body {
-    background: #eee;
+    background: #efefef;
 }
 
 .wrapper {    
@@ -12,6 +12,12 @@ body {
 }
 
 .node_content {    
+}
+
+.logo a {
+    font-size: 18pt;
+    color: #CCC;
+
 }
 
 .links {

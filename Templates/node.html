@@ -1,36 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <div class="row">
-        <div class="card">
-        {% block node_content %}{% endblock %}        
-        </div>   
+    <div class="row">        
+        {% block node_content %}{% endblock %}                
     </div>
-    {% for key,items in links.items %}                  
-       
-            <div class="section">
-            {% if key != 'ungrouped' %}
-                <h5>{{ key }}{{ items|length|pluralize }}</h5>
-                {% include 'Blocks/add_buttons.html' with relation=key %}
-            {% else %}
-                {% include 'Blocks/add_buttons.html' %}
-            {% endif %}
-        {%if items%}   
-            <ul class="collection"> 
-            {% for item in items %}
-                <li class="collection-item avatar">
-                    <i class="material-icons circle">{{ item.relation }}</i>
-                    <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}">{{ item.content.title|striptags }}</a></span>
-                    <p>{{ item.content.details|striptags  }}</p>
-                    <p>{{ item.relation }}</p>
-                    {% if item.id %}
-                    <a href="/links/{{ item.id }}/remove" class="secondary-content"><i class="material-icons">remove_circle</i></a>
-                    {% endif %}
-                </li>
-            {% endfor %}
-            </ul>        
-        {% endif %}  
-        </div>      
-    {% endfor %}
+    <div class="row">
+        {% include 'Blocks/links.html' %}
+    </div>
     {% include 'Blocks/add_form.html' %}
 {% endblock %}
