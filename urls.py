@@ -24,7 +24,7 @@ urlpatterns = [
 	url(r'^logout', 'Nodes.views.logout'),
 
 	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
-	url(r'^text/add', 'Nodes.views.add_node'),
+	url(r'^add', 'Nodes.views.add_node'),
 
 	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
 

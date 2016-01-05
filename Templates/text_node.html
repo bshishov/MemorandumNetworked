@@ -2,7 +2,7 @@
 
 {% block node_content %}        
     <form method="post" id="text-form" style="display:none;">
-        <input type="hidden" id="text-field" />            
+        <input type="hidden" id="text-field" name="text"/>            
         {% csrf_token %}
     </form>
     <div id="text-content">{{ node.text|safe }}</div>      

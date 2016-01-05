@@ -7,7 +7,7 @@
         </div>   
     </div>
     {% for key,items in links.items %}                  
-        {%if items%}
+       
             <div class="section">
             {% if key != 'ungrouped' %}
                 <h5>{{ key }}{{ items|length|pluralize }}</h5>
@@ -15,7 +15,7 @@
             {% else %}
                 {% include 'Blocks/add_buttons.html' %}
             {% endif %}
-            
+        {%if items%}   
             <ul class="collection"> 
             {% for item in items %}
                 <li class="collection-item avatar">
@@ -28,9 +28,9 @@
                     {% endif %}
                 </li>
             {% endfor %}
-            </ul>
-        </div>
-        {% endif %}        
+            </ul>        
+        {% endif %}  
+        </div>      
     {% endfor %}
     {% include 'Blocks/add_form.html' %}
 {% endblock %}
