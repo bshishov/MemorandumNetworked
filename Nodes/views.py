@@ -27,7 +27,7 @@ def get_links(context, identifier, provider='text'):
                     new_item.relation = 'file'
                 context['links'].append(new_item)
     elif provider == 'url':
-        pass
+        context['links'] = list(Link.objects.filter(node1=identifier))
     return context
 
 def get_links_descriptions(context):
@@ -55,11 +55,11 @@ def get_links_descriptions(context):
                 stat = os.stat(link.node2)
             link.content = {'title': title, 'details': None, 'image': ''}
         elif link.provider2 == 'url':
-            url = Url.objects.get(url=link.node2)
+            url = Url.objects.get(url_hash=link.node2)
             if url is None:
-                link.content = {'title': link.node2, 'details': 'missing node', 'image': ''}
+                link.content = {'title': url.url, 'details': 'missing node', 'image': ''}
             else:
-                link.content = {'title': link.node2, 'details': url.name, 'image': url.image}
+                link.content = {'title': url.url, 'details': url.name, 'image': url.image}
     return context
 
 def group_links(context):
@@ -77,6 +77,20 @@ def group_links(context):
             grouped_links[link.relation].append(link)
     context['links'] = grouped_links
     return context
+
+@require_login(url='/login/')
+def unlinked(request):
+    ctx = {}
+    nodes = Node.objects.all().values_list('id', flat=True)
+    urls = Url.objects.all().values_list('url_hash', flat=True)
+    ids = [str(node) for node in nodes] + list(urls)
+    print(ids)
+    from django.db.models import Q
+    links = Link.objects.exclude(Q(provider1='file') | Q(provider2='file')).exclude(node1__in=ids)
+    print(links.values_list('node1', flat=True))
+    ctx['links'] = links
+    ctx = group_links(ctx)
+    return render(request, 'node.html', ctx)
 
 @require_login(url='/login/')
 def index(request):
@@ -120,6 +134,15 @@ def text_node(request, id):
     return render(request, 'text_node.html', ctx)
 
 @require_login(url='/login/')
+def url_node(request, id):
+    ctx = {}
+    ctx['id'] = id
+    ctx['provider'] = 'url'
+    ctx['node'] = get_object_or_404(Url, url_hash=id)
+    ctx = group_links(get_links(ctx, id))
+    return render(request, 'url_node.html', ctx)
+
+@require_login(url='/login/')
 def add_node(request):
     ctx = {}
     if request.method == 'POST':
@@ -147,13 +170,11 @@ def add_node(request):
                 title, image = get_url_info(url_text, url_hash)
                 url = Url(url=url_text, name=title, image=image)
                 url.url_hash = url_hash
-
-
                 url.save()
             except:
                 url = Url.objects.get(url_hash=url_hash)
             link = Link(node1=parent_node_id, provider1=parent_node_provider)
-            link.node2 = url_text
+            link.node2 = url_hash
             link.provider2 = 'url'
             link.relation = relation
             link.save()
