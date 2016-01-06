@@ -17,8 +17,24 @@ body {
 .logo a {
     font-size: 18pt;
     color: #CCC;
-
 }
+
+.formatted-text ul {
+    list-style-type: disc;
+    padding-left:2em;
+    margin-left:0;
+}
+
+.formatted-text ol {    
+    padding-left:2em;
+    margin-left:0;
+}
+
+
+.formatted-text ul li {
+    list-style-type: disc;
+}
+
 
 .links {
 

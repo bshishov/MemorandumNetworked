@@ -7,7 +7,7 @@
         {% csrf_token %}
     </form>
     <div class="card">
-        <div id="text-content">{{ node.text|safe }}</div>      
+        <div id="text-content" class="formatted-text">{{ node.text|safe }}</div>      
     </div>    
     <div class="right-align">           
         <a class="waves-effect btn-flat" href="javascript://" id="save-button"><i class="material-icons left">save</i> Save</a>

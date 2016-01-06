@@ -21,7 +21,7 @@
 
             <div class="row" >
                 <div class="col s12">                    
-                    <textarea id="form-text-field" name="text" ></textarea>                    
+                    <textarea id="form-text-field" name="text" class="foramtted-text"></textarea
                 </div>
             </div> 
             
@@ -37,7 +37,13 @@
 
 <script type="text/javascript">
         $('#form-text-field').trumbowyg({
-            autogrow: true
+            autogrow: true,             
+            btns: ['formatting',
+              '|', 'btnGrp-design',
+              '|', 'link',
+              '|', 'insertImage',
+              '|', 'btnGrp-justify',
+              '|', 'btnGrp-lists']
         });        
     </script>
 
