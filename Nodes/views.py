@@ -47,19 +47,21 @@ def get_links_descriptions(context):
                     link.content = {'title': node.text, 'details': node.text, 'image': ''}
                     break
         elif link.provider2 == 'file':
+            size = ''
             if os.path.isdir(link.node2):
                 title = link.node2.split(os.sep)[-2] + os.sep
             else:
                 title = get_filename(link.node2)
+                size = os.path.getsize(link.node2)
             if os.path.exists(link.node2):
                 stat = os.stat(link.node2)
-            link.content = {'title': title, 'details': None, 'image': ''}
+            link.content = {'title': title, 'details': size, 'image': ''}
         elif link.provider2 == 'url':
             url = Url.objects.get(url_hash=link.node2)
             if url is None:
-                link.content = {'title': url.url, 'details': 'missing node', 'image': ''}
+                link.content = {'title': url.url, 'details': '', 'image': ''}
             else:
-                link.content = {'title': url.url, 'details': url.name, 'image': url.image}
+                link.content = {'title': url.name, 'details': url.url, 'image': url.image}
     return context
 
 def group_links(context):
