@@ -12,9 +12,9 @@ from helpers import *
 def get_links(context, identifier, provider='text'):
     context['links'] = []
     if provider == 'text':
-        links = Link.objects.filter(node1=identifier)
-        context['links'] = list(links)
+        context['links'] = list(Link.objects.filter(node1=identifier))
     elif provider == 'file':
+        context['links'] = list(Link.objects.filter(node1=identifier))
         if os.path.isdir(identifier):
             filelist = os.listdir(identifier)
             for item in filelist:
