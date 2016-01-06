@@ -25,6 +25,24 @@ body {
 }
 
 .link {    
+    cursor: pointer;
+}
+
+.link .link-details {
+    color: #888;
+}
+
+.link .link-icon .circle {
+    width: 24px;
+    height: 24px;    
+}
+
+.link .link-icon i.circle {
+    font-size: 16px;
+    line-height: 24px;
+    color: #fff;
+    background-color: #999;
+    text-align: center;
 }
 
 .trumbowyg-box {
@@ -47,4 +65,16 @@ body {
 
 .add_buttons a {
     color: #AAA;
+}
+
+ #editor { 
+        position: relative;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
+.image-file div {
+    display: inline-block;   
 }

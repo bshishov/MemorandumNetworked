@@ -17,24 +17,25 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from Nodes import views
 
 urlpatterns = [
-	url(r'^$', 'Nodes.views.index'),
-	url(r'^login', 'Nodes.views.login'),
-	url(r'^logout', 'Nodes.views.logout'),
+	url(r'^$', views.index),
+	url(r'^login', views.login),
+	url(r'^logout', views.logout),
 
-	url(r'^add', 'Nodes.views.add_node'),
+	url(r'^add', views.add_node),
 
-	url(r'^text/(?P<id>\d+)', 'Nodes.views.text_node'),
+	url(r'^text/(?P<id>\d+)', views.text_node),
 
-	url(r'^file/raw/(?P<id>.+)', 'Nodes.views.open_file'),
-	url(r'^file/download/(?P<id>.+)', 'Nodes.views.download_file'),
-	url(r'^file/(?P<id>.+)', 'Nodes.views.file_node'),
+	url(r'^file/raw/(?P<id>.+)', views.open_file),
+	url(r'^file/download/(?P<id>.+)', views.download_file),
+	url(r'^file/(?P<id>.+)', views.file_node),
 
-	url(r'^links/(?P<id>\d+)/remove', 'Nodes.views.delete_link'),
+	url(r'^links/(?P<id>\d+)/remove', views.delete_link),
 
     url(r'^admin/', admin.site.urls),
-    url(r'^test/', 'Nodes.views.test'),
+    url(r'^test/', views.test),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

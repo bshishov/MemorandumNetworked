@@ -7,29 +7,39 @@
         {% include 'Blocks/add_buttons.html' %}
     {% endif %}
     {%if items%}   
-        <ul class="collection"> 
+
+        <ul class="collection z-depth-1"> 
         {% for item in items %}
-            <li class="collection-item avatar">
-                {% if item.content.image %}
-                <img src="{{item.content.image}}" alt="" class="circle">
-                {% else %} 
-                    {% if item.provider2 == "file" %}
-                    <i class="material-icons circle">insert_drive_file</i>
-                    {% elif item.provider2 == "text" %}
-                    <i class="material-icons circle">description</i>
-                    {% elif item.provider2 == "url" %}
-                    <i class="material-icons circle">link</i>
-                    {% else %}
-                    <i class="material-icons circle">message</i>
+            <li class="collection-item row link" data-path="/{{ item.provider2 }}/{{ item.node2|urlencode }}">
+                <div class="col m2 s3 link-icon">    
+                     {% if item.provider2 == "file" %}
+                        <i class="material-icons tiny left circle">insert_drive_file</i>
+                        {% elif item.provider2 == "text" %}
+                        <i class="material-icons tiny left circle">description</i>
+                        {% elif item.provider2 == "url" %}
+                        <i class="material-icons tiny left circle">link</i>
+                        {% else %}
+                        <i class="material-icons tiny left circle">message</i>
+                        {% endif %}            
+                    <STRONG>{{ item.relation|capfirst }}</STRONG>    
+                </div>                 
+                <div class="col m9 s8 link-content">
+                    <strong><a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}" class="link-title">{{ item.content.title|striptags|truncatechars:140 }}</a></strong>
+                    <span class="link-details">{{ item.content.details|striptags|truncatechars:140 }}</span>
+
+                    {% if item.content.image %}                    
+                    <div class="link-additional">
+                        <a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}">
+                            <img src="{{item.content.image}}" alt="" class="responsive-img z-depth-1">
+                        </a>
+                    </div>
                     {% endif %}
-                {% endif %}
-                <span class="title">{{ item.relation|capfirst }}</span>
-                <span class="title"><a href="/{{ item.provider2 }}/{{ item.node2|urlencode }}">{{ item.content.title|striptags|truncatechars:140 }}</a></span>
-                <p>{{ item.content.details|striptags|truncatechars:140  }}</p>
-                
-                {% if item.id %}
-                <a href="/links/{{ item.id }}/remove" title="Unlink" class="secondary-content"><i class="material-icons">remove_circle_outline</i></a>
-                {% endif %}
+                </div>
+                <div class="col s1">
+                    {% if item.id %}
+                    <a href="/links/{{ item.id }}/remove" title="Unlink" class="secondary-content"><i class="material-icons tiny">remove_circle_outline</i></a>
+                    {% endif %} 
+                </div>
             </li>
         {% endfor %}
         </ul>        

@@ -2,14 +2,23 @@
 
 {% block file_content %}
 <div id="editor"></div>
-<script src="/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace/ext-modelist.js" type="text/javascript" charset="utf-8"></script>
 <script>
     $(document).ready(function(){
         var path = "/file/raw/{{path|urlencode}}";
         $('#editor').load(path, function(){
-            var editor = ace.edit("editor");
-            editor.setTheme("ace/theme/monokai");
-            editor.getSession().setMode("ace/mode/text");
+            var modelist = ace.require("ace/ext/modelist");                       
+            var mode = modelist.getModeForPath('{{path}}').mode;
+
+            var editor = ace.edit("editor");           
+
+            editor.setTheme("ace/theme/github");
+            editor.getSession().setMode(mode);
+            editor.setAutoScrollEditorIntoView(true);
+            editor.setOption("minLines", 10);
+            editor.setOption("maxLines", 40);
+            editor.setOption("scrollPastEnd", true);
         });
     });   
 </script>

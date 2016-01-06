@@ -1,5 +1,9 @@
 {% extends 'file_node.html' %}
 
 {% block file_content %}
-<img class="materialboxed" src="/file/raw/{{path|urlencode}}">
+<div class="image-file center-align">
+    <div>
+        <img class="materialboxed responsive-img" src="/file/raw/{{path|urlencode}}">
+    </div>
+</div>
 {% endblock %}
