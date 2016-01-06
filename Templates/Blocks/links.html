@@ -13,13 +13,13 @@
             <li class="collection-item row link" data-path="/{{ item.provider2 }}/{{ item.node2|urlencode }}">
                 <div class="col m2 s3 link-icon">    
                      {% if item.provider2 == "file" %}
-                        <i class="material-icons tiny left circle">insert_drive_file</i>
+                        <i class="material-icons tiny left circle red">insert_drive_file</i>
                         {% elif item.provider2 == "text" %}
-                        <i class="material-icons tiny left circle">description</i>
+                        <i class="material-icons tiny left circle green">description</i>
                         {% elif item.provider2 == "url" %}
-                        <i class="material-icons tiny left circle">link</i>
+                        <i class="material-icons tiny left circle blue">link</i>
                         {% else %}
-                        <i class="material-icons tiny left circle">message</i>
+                        <i class="material-icons tiny left circle teal">message</i>
                         {% endif %}            
                     <STRONG>{{ item.relation|capfirst }}</STRONG>    
                 </div>                 

@@ -1,6 +1,7 @@
-<div id="textform" class="modal bottom-sheet">
+<div id="textform" class="modal">   
     <div class="modal-content">
-        <form class="col s12" method="post" action="/add">
+        <h4>Add text note</h4>
+        <form method="post" action="/add">
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="text" />
@@ -19,23 +20,31 @@
             </div>
 
             <div class="row" >
-                <div class="input-field col s12">
-                    <i class="material-icons prefix">message</i>
-                    <textarea name="text" class="materialize-textarea"></textarea>
-                    <label for="text">Text</label>
+                <div class="col s12">                    
+                    <textarea id="form-text-field" name="text" ></textarea>                    
                 </div>
-            </div>
-            <div class="row">  
-                <button type="submit" class="btn"><i class="material-icons">add</i></button>
-            </div>
-            {% csrf_token %}
-        </form>
-    </div>    
+            </div> 
+            
+            <div class="row">
+                <div class="col s12"> 
+                    <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                </div>
+            </div>  
+            {% csrf_token %} 
+        </form>          
+    </div>        
 </div>
 
-<div id="urlform" class="modal bottom-sheet">
+<script type="text/javascript">
+        $('#form-text-field').trumbowyg({
+            autogrow: true
+        });        
+    </script>
+
+<div id="urlform" class="modal">
     <div class="modal-content">
-        <form class="col s12" method="post" action="/add">
+        <h4>Add URL</h4>
+        <form method="post" action="/add">
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="url" />
@@ -64,16 +73,19 @@
                 </div>
             </div>
             <div class="row">  
-                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                <div class="col s12"> 
+                    <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                </div>
             </div>
             {% csrf_token %}
         </form>
     </div>
 </div>
 
-<div id="fileform" class="modal bottom-sheet">
+<div id="fileform" class="modal">
     <div class="modal-content">
-        <form class="col s12" method="post" action="/add">
+        <h4>Upload file</h4>
+        <form method="post" action="/add">
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="file" />
@@ -102,7 +114,9 @@
                 </div>
             </div>
             <div class="row">  
-                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                <div class="col s12"> 
+                    <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                </div>
             </div>
             {% csrf_token %}
         </form>
@@ -110,9 +124,10 @@
 </div>
 
 
-<div id="folderform" class="modal bottom-sheet">
+<div id="folderform" class="modal">
     <div class="modal-content">
-        <form class="col s12" method="post" action="/add">
+        <h4>Create folder</h4>
+        <form method="post" action="/add">
             <input type="hidden" name="parent_id" value="{{ id }}" />
             <input type="hidden" name="parent_provider" value="{{ provider }}" />
             <input type="hidden" name="new_provider" value="file" />
@@ -137,7 +152,9 @@
                 </div>                
             </div>
             <div class="row">  
-                <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                <div class="col s12"> 
+                    <button type="submit" class="btn"><i class="material-icons">add</i></button>
+                </div>
             </div>
             {% csrf_token %}
         </form>
@@ -158,4 +175,29 @@
     folder
  -->
 
+<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+    <a class="btn-floating btn-large blue">
+        <i class="large material-icons">add</i>
+    </a>
+    <ul>
+        <li><a class="modal-trigger btn-floating green" title="Add text note" href="#textform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+            <i class="material-icons">note_add</i>
+        </a></li>
 
+        <li><a class="modal-trigger btn-floating blue" title="Add URL" href="#urlform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+            <i class="material-icons">link</i>
+        </a>  </li>
+
+        <li><a class="modal-trigger btn-floating red" title="Add Files" href="#fileform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+            <i class="material-icons">insert_drive_file</i>
+        </a></li>
+
+        <li><a class="modal-trigger btn-floating red" title="Create folder" href="#folderform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+            <i class="material-icons">folder</i>
+        </a></li>
+
+        <li><a class="modal-trigger btn-floating " title="Link another node" href="#!" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+            <i class="material-icons">search</i>
+        </a></li>        
+    </ul>
+</div>
