@@ -2,27 +2,42 @@
 {% load timestamp_to_time %}
 
 {% block node_content %}
-    <h2>{{ file }}</h2>
-    <p>{{ path }}</p>
-    <div class="card">    
-        <div class="card-content">
-            Mime: {{mime}}<br/>
-            {{ node.st_size|filesizeformat }}<br>            
-            Last access: {{ node.st_atime|fromtimestamp|date:"D d M Y" }} <br>
-            Last change: {{ node.st_mtime|fromtimestamp|date:"D d M Y" }} <br>
-            <!-- http://www.tutorialspoint.com/python/os_stat.htm -->
-            <!-- {{ node }} -->
-        </div>
-    </div>    
-
+    <h4 id="path">{{ path }}</h4>    
+    <!-- {{ file }} -->
+    <!-- http://www.tutorialspoint.com/python/os_stat.htm -->
+    <!-- {{ node }} -->
     <!-- FILE content -->
     <div class="card">
     {% block file_content %}{% endblock %}
     </div>
-
-    <div class="right-align">           
-        <a class="waves-effect btn-flat" href="/file/raw/{{path|urlencode}}"><i class="material-icons left">remove_red_eye</i> Raw</a>
-        <a class="waves-effect btn-flat" href="/file/download/{{path|urlencode}}"><i class="material-icons left">file_download</i> Download</a>
-        <a class="waves-effect btn-flat" href="javascript://"><i class="material-icons left">delete</i> Delete</a>
-    </div> 
+    <div class="row">
+        <div class="col m5 s12">            
+            {% if file %}
+            <div class="chip">{{ node.st_size|filesizeformat }}</div>
+            <div class="chip">{{ node.st_mtime|fromtimestamp|date:"D d M Y" }}</div>            
+            <div class="chip tooltipped" data-tooltip="{{ mime }}">{{ mime|truncatechars:20 }}</div>
+            {% else %}
+            <div class="chip">{{ node.st_mtime|fromtimestamp|date:"D d M Y" }}</div>
+            {% endif %}
+        </div>
+        <div class="col m7 s12 right-align">           
+            <a class="waves-effect btn-flat" href="/file/raw/{{path|urlencode}}"><i class="material-icons left">remove_red_eye</i> Raw</a>
+            <a class="waves-effect btn-flat" href="/file/download/{{path|urlencode}}"><i class="material-icons left">file_download</i> Download</a>
+            <a class="waves-effect btn-flat" href="javascript://"><i class="material-icons left">delete</i> Delete</a>
+        </div> 
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var path = $('#path').html();
+            var parts = path.split('/');
+            var res = "<a href='/file//'>.</a>/";
+            var resPath = "";
+            for (var i = 1; i < parts.length - 1; i++) {
+                resPath = resPath + "/" + parts[i];
+                res += "<a href='/file/" + resPath + "/'>" + parts[i] + "</a>/";
+            };
+            res += parts[parts.length - 1];
+            $('#path').html(res);
+        });
+    </script>
 {% endblock %}
