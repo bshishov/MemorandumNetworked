@@ -36,6 +36,7 @@ urlpatterns = [
 	url(r'^file/(?P<id>.+)', views.file_node),
 
 	url(r'^links/(?P<id>\d+)/remove', views.delete_link),
+	url(r'^links/(?P<id>\d+)', views.link),
 
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.test),

@@ -62,7 +62,7 @@ def get_links_descriptions(context):
             link.content = {'stats': stat, 'isdir': isdir, 'path': link.node2, 'filename': title}
         elif link.provider2 == 'url':
             for url in linked_urls:
-                if url == link.node2:
+                if url.url_hash == link.node2:
                     link.content = url
     return context
 
@@ -85,16 +85,12 @@ def group_links(context):
 @require_login(url='/login/')
 def unlinked(request):
     ctx = {}
-    nodes = Node.objects.filter(user=request.user).values_list('id', flat=True)
-    urls = Url.objects.filter(user=request.user).values_list('url_hash', flat=True)
-    ids = [str(node) for node in nodes] + list(urls)
-    print(ids)
-    from django.db.models import Q
-    links = Link.objects.all()
-    links = links.exclude(Q(provider1='file') | Q(provider2='file')).exclude(node1__in=ids)
-    print(links.values_list('node1', flat=True))
-    ctx['links'] = links
-    ctx = group_links(ctx)
+    home_id = request.user.profile.home.id
+    node_links = list(Link.objects.filter(user=request.user, provider2='text').values_list('node2', flat=True))
+    node_links.append(str(home_id))
+    url_links = Link.objects.filter(user=request.user, provider2='url').values_list('node2', flat=True)
+    ctx['nodes'] = Node.objects.filter(user=request.user).exclude(id__in=node_links)
+    ctx['urls'] = Url.objects.filter(user=request.user).exclude(url_hash__in=url_links)
     return render(request, 'node.html', ctx)
 
 @require_login(url='/login/')
@@ -148,23 +144,28 @@ def url_node(request, id):
     return render(request, 'url_node.html', ctx)
 
 @require_login(url='/login/')
+def link(request, id):
+    relation = request.POST.get('relation')
+    if request.method == 'POST' and relation != '':
+        link = Link.objects.get(id=id)
+        link.relation = relation
+        link.save()
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return HttpResponseRedirect('/')
+
+@require_login(url='/login/')
 def add_node(request):
     ctx = {}
-    if request.method == 'POST':
-        link = None
-        provider = request.POST.get('new_provider')
-        parent_node_id = request.POST.get('parent_id')
-        parent_node_provider = request.POST.get('parent_provider')
-        relation = request.POST.get('relation')
-        relation_back = request.POST.get('relation_back')
+    provider = request.POST.get('new_provider')
+    parent_id = request.POST.get('parent_id')
+    parent_provider = request.POST.get('parent_provider')
+    relation = request.POST.get('relation')
+    relation_back = request.POST.get('relation_back')
+    if request.method == 'POST' and relation != '':
         if provider == 'text':
             node = Node(user=request.user, text=request.POST.get('text'))
             node.save()
-            link = Link(node1=parent_node_id, provider1=parent_node_provider)
-            link.node2 = node.id
-            link.provider2 = 'text'
-            link.relation = relation
-            link.save()
+            make_relation(request.user, parent_id, parent_provider, node.id, provider, relation, relation_back)
         elif provider == 'url':
             url_text = request.POST.get('url')
             import hashlib
@@ -178,16 +179,12 @@ def add_node(request):
                 url.save()
             except:
                 url = Url.objects.get(url_hash=url_hash)
-            link = Link(node1=parent_node_id, provider1=parent_node_provider)
-            link.node2 = url_hash
-            link.provider2 = 'url'
-            link.relation = relation
-            link.save()
+            make_relation(request.user, parent_id, parent_provider, node.id, provider, relation, relation_back)
         elif provider == 'file':
             new_path = os.path.join(parent_id, request.POST.get('name'))
-            if os.path.isdir(parent_node_id) and os.path.isdir(new_path):
+            if os.path.isdir(parent_id) and os.path.isdir(new_path):
                 os.mkdir(new_path)
-        make_relation_back(link, relation_back)
+            make_relation(request.user, parent_id, parent_provider, node.id, provider, relation, relation_back)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/')
@@ -266,9 +263,17 @@ def get_url_title(url):
 def get_url_info(url, url_hash):
     return (get_url_title(url), '')
 
-def make_relation_back(link, relation_back):
+def make_relation(user, parent_node_id, parent_node_provider, node_id, node_provider, relation, relation_back):
+    link = Link(user=user, node1=parent_node_id, provider1=parent_node_provider)
+    link.node2 = node_id
+    link.provider2 = node_provider
+    link.relation = relation
+    link.save()
+    make_relation_back(user, link, relation_back)
+
+def make_relation_back(user, link, relation_back):
     if link is not None and relation_back != '':
-        new_link = Link()
+        new_link = Link(user=user)
         new_link.node1 = link.node2
         new_link.node2 = link.node1
         new_link.provider1 = link.provider2

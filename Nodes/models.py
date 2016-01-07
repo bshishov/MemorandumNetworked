@@ -17,6 +17,7 @@ class Url(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
 class Link(models.Model):
+    user = models.ForeignKey(User)
     node1 = models.CharField(max_length=1000)
     node2 = models.CharField(max_length=1000)
     provider1 = models.CharField(max_length=100)
