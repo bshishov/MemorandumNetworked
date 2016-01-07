@@ -31,12 +31,15 @@ def get_links(context, identifier, provider='text'):
     return context
 
 def get_links_descriptions(context):
-    all_ids = [l.node2 for l in context['links']]
     int_ids = []
-    for id in all_ids:
-        if try_parse_int(id) is not None:
-            int_ids.append(id)
+    url_ids = []
+    for link in context['links']:
+        if try_parse_int(link.node2) is not None:
+            int_ids.append(link.node2)
+        if link.provider2 == 'url':
+            url_ids.append(link.node2)
     linked_nodes = Node.objects.filter(id__in=int_ids)
+    linked_urls = Url.objects.filter(url_hash__in=url_ids)
     for link in context['links']:
         if link.provider2 == 'text':
             connected_id = try_parse_int(link.node2)
@@ -44,24 +47,23 @@ def get_links_descriptions(context):
                 continue
             for node in linked_nodes:
                 if connected_id == node.id:
-                    link.content = {'title': node.text, 'details': node.text, 'image': ''}
+                    link.content = node
                     break
         elif link.provider2 == 'file':
-            size = ''
+            stat = ''
+            isdir = False
             if os.path.isdir(link.node2):
+                isdir = True
                 title = link.node2.split(os.sep)[-2] + os.sep
             else:
+                if os.path.exists(link.node2):
+                    stat = os.stat(link.node2)
                 title = get_filename(link.node2)
-                size = os.path.getsize(link.node2)
-            if os.path.exists(link.node2):
-                stat = os.stat(link.node2)
-            link.content = {'title': title, 'details': size, 'image': ''}
+            link.content = {'stats': stat, 'isdir': isdir, 'path': link.node2, 'filename': title}
         elif link.provider2 == 'url':
-            url = Url.objects.get(url_hash=link.node2)
-            if url is None:
-                link.content = {'title': url.url, 'details': '', 'image': ''}
-            else:
-                link.content = {'title': url.name, 'details': url.url, 'image': url.image}
+            for url in linked_urls:
+                if url == link.node2:
+                    link.content = url
     return context
 
 def group_links(context):
@@ -83,12 +85,13 @@ def group_links(context):
 @require_login(url='/login/')
 def unlinked(request):
     ctx = {}
-    nodes = Node.objects.all().values_list('id', flat=True)
-    urls = Url.objects.all().values_list('url_hash', flat=True)
+    nodes = Node.objects.filter(user=request.user).values_list('id', flat=True)
+    urls = Url.objects.filter(user=request.user).values_list('url_hash', flat=True)
     ids = [str(node) for node in nodes] + list(urls)
     print(ids)
     from django.db.models import Q
-    links = Link.objects.exclude(Q(provider1='file') | Q(provider2='file')).exclude(node1__in=ids)
+    links = Link.objects.all()
+    links = links.exclude(Q(provider1='file') | Q(provider2='file')).exclude(node1__in=ids)
     print(links.values_list('node1', flat=True))
     ctx['links'] = links
     ctx = group_links(ctx)
@@ -96,7 +99,7 @@ def unlinked(request):
 
 @require_login(url='/login/')
 def index(request):
-    return text_node(request, 1)
+    return text_node(request, request.user.profile.home.id)
 
 @unauthenticated_only(url='/')
 def login(request):
@@ -127,7 +130,7 @@ def text_node(request, id):
     ctx = {}
     ctx['id'] = id
     ctx['provider'] = 'text'
-    ctx['node'] = get_object_or_404(Node, id=id)
+    ctx['node'] = get_object_or_404(Node, user=request.user.id, id=id)
     if request.method == 'POST':
         ctx['node'].text = request.POST.get('text')
         ctx['node'].save()
@@ -140,7 +143,7 @@ def url_node(request, id):
     ctx = {}
     ctx['id'] = id
     ctx['provider'] = 'url'
-    ctx['node'] = get_object_or_404(Url, url_hash=id)
+    ctx['node'] = get_object_or_404(Url, user=request.user.id, url_hash=id)
     ctx = group_links(get_links(ctx, id))
     return render(request, 'url_node.html', ctx)
 
@@ -155,7 +158,7 @@ def add_node(request):
         relation = request.POST.get('relation')
         relation_back = request.POST.get('relation_back')
         if provider == 'text':
-            node = Node(text=request.POST.get('text'))
+            node = Node(user=request.user, text=request.POST.get('text'))
             node.save()
             link = Link(node1=parent_node_id, provider1=parent_node_provider)
             link.node2 = node.id
@@ -170,7 +173,7 @@ def add_node(request):
             url_hash = m.hexdigest()
             try:
                 title, image = get_url_info(url_text, url_hash)
-                url = Url(url=url_text, name=title, image=image)
+                url = Url(user=request.user, url=url_text, name=title, image=image)
                 url.url_hash = url_hash
                 url.save()
             except:
@@ -250,22 +253,18 @@ def file_node(request, id):
     else:
         raise Http404
 
-def get_url_info(url, url_hash):
-    path_to_screen = ''
-    title = url
+def get_url_title(url):
+    try:
+        import urllib3
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(urllib3.PoolManager().urlopen('GET', url))
+        title = soup.title.string
+    except:
+        title = url
+    return title
 
-    from ghost import Ghost
-    ghost = Ghost()
-    import settings
-    import time
-    path_to_screen = os.path.join(settings.MEDIA_URL, url_hash + '.png')
-    with ghost.start() as session:
-        session.set_viewport_size(1600, 1600)
-        session.open(url)
-        title, attrs = session.evaluate('document.title')
-        from settings import SCREENSHOT_SIZE
-        session.capture((0, 0, 1600, 1600)).scaled(SCREENSHOT_SIZE, SCREENSHOT_SIZE).save(path_to_screen)
-    return (title, path_to_screen)
+def get_url_info(url, url_hash):
+    return (get_url_title(url), '')
 
 def make_relation_back(link, relation_back):
     if link is not None and relation_back != '':
@@ -278,5 +277,4 @@ def make_relation_back(link, relation_back):
         new_link.save()
 
 def test(request):
-    # get_url_info('http://habrahabr.ru', '123')
     return HttpResponse('ok')
