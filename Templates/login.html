@@ -1,7 +1,32 @@
+{% extends 'layout.html' %}
 
-<form method='post'>
-	{% csrf_token %}
-	<input name='username' />
-	<input name='password' type='password' />
-	<input type='submit' />
-</form>
+{% block content %}
+<div class="row">
+    <div class="card col m6 push-m3 s12">
+        <div class="card-content center">                
+            <form method='post'>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">account_circle</i>
+                        <input type="text" class="validate" name='username' autofocus>
+                        <label for="username">Login</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">vpn_key</i>
+                        <input name="password" type="password" class="validate">
+                        <label for="password">Password</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">GO
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>        
+        </div>
+    </div>
+</div>
+{% endblock %}
