@@ -1,9 +1,7 @@
 # coding: utf-8
 from django.http import HttpResponse
 from django.template import RequestContext
-from django.shortcuts import render_to_response
-from django.shortcuts import redirect
-from django.template.loader import render_to_string
+from django.shortcuts import render_to_response, redirect
 
 import json
 

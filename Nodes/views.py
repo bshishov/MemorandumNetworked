@@ -1,7 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, render_to_response, redirect, get_list_or_404, get_object_or_404
+from django.shortcuts import redirect, get_list_or_404, get_object_or_404
 from django.template import RequestContext
-from django.template.loader import render_to_string
 
 import json
 import os
@@ -9,25 +8,31 @@ import os
 from Nodes.models import Node, Link, Url
 from helpers import *
 
-def get_links(context, identifier, provider='text'):
-    context['links'] = []
-    if provider == 'text':
-        context['links'] = list(Link.objects.filter(node1=identifier))
-    elif provider == 'file':
-        context['links'] = list(Link.objects.filter(node1=identifier))
+def get_links(user, context, identifier, provider='text'):
+    context['links'] = list(Link.objects.filter(user=user, node1=identifier))
+    if provider == 'file':
+        context['links'] = list(Link.objects.filter(user=user, node1=identifier))
         if os.path.isdir(identifier):
             filelist = os.listdir(identifier)
             for item in filelist:
                 full_path = identifier + item
-                new_item = Link(node1=identifier, provider1='file', node2=full_path, provider2='file')
+                new_item = Link(user=user, node1=identifier, provider1='file', node2=full_path, provider2='file')
                 if os.path.isdir(full_path):
                     new_item.relation = 'folder'
                     new_item.node2 += os.sep
                 else:
                     new_item.relation = 'file'
                 context['links'].append(new_item)
-    elif provider == 'url':
-        context['links'] = list(Link.objects.filter(node1=identifier))
+    return context
+
+def get_parent_links(user, context, identifier, provider='text'):
+    context['parent_links'] = []
+    nodes = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider2='text')]
+    urls = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider2='url')]
+    context['parent_links'] += list(Node.objects.filter(user=user, id__in=nodes))
+    context['parent_links'] += list(Url.objects.filter(user=user, url_hash__in=urls))
+    if provider == 'file' and identifier != '/':
+        context['parent_links'].append(os.path.abspath(os.path.join(identifier, os.pardir)))
     return context
 
 def get_links_descriptions(context):
@@ -131,7 +136,8 @@ def text_node(request, id):
         ctx['node'].text = request.POST.get('text')
         ctx['node'].save()
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
-    ctx = group_links(get_links(ctx, id))
+    ctx = group_links(get_links(request.user, ctx, id))
+    ctx = get_parent_links(request.user, ctx, id)
     return render(request, 'text_node.html', ctx)
 
 @require_login(url='/login/')
@@ -140,8 +146,16 @@ def url_node(request, id):
     ctx['id'] = id
     ctx['provider'] = 'url'
     ctx['node'] = get_object_or_404(Url, user=request.user.id, url_hash=id)
-    ctx = group_links(get_links(ctx, id))
+    ctx = group_links(get_links(request.user, ctx, id))
+    ctx = get_parent_links(request.user, ctx, id)
     return render(request, 'url_node.html', ctx)
+
+@require_login(url='/login/')
+def delete_node(request, id):
+    url = Url.objects.get(url_hash=id)
+    if url is not None:
+        url.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/login/')
 def link(request, id):
@@ -179,12 +193,13 @@ def add_node(request):
                 url.save()
             except:
                 url = Url.objects.get(url_hash=url_hash)
-            make_relation(request.user, parent_id, parent_provider, node.id, provider, relation, relation_back)
+            make_relation(request.user, parent_id, parent_provider, url_hash, provider, relation, relation_back)
         elif provider == 'file':
+            # todo - add files
             new_path = os.path.join(parent_id, request.POST.get('name'))
             if os.path.isdir(parent_id) and os.path.isdir(new_path):
                 os.mkdir(new_path)
-            make_relation(request.user, parent_id, parent_provider, node.id, provider, relation, relation_back)
+            make_relation(request.user, parent_id, parent_provider, new_path, provider, relation, relation_back)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/')
@@ -206,18 +221,20 @@ def download_file(request, id):
 def open_file(request, id):
     if os.path.isdir(id):
         raise Http404
-    from mimetypes import MimeTypes
-    mime = MimeTypes()
-    mimetype = mime.guess_type(id)
-    response = HttpResponse(content_type=mimetype[0])
-    f = open(id, 'rb')
-    response.write(f.read())
-    f.close()
-    return response
+    try:
+        from mimetypes import MimeTypes
+        mime = MimeTypes()
+        mimetype = mime.guess_type(id)
+        response = HttpResponse(content_type=mimetype[0])
+        f = open(id, 'rb')
+        response.write(f.read())
+        f.close()
+        return response
+    except PermissionError:
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @require_login(url='/login/')
 def delete_link(request, id):
-    ctx = {}
     link = Link.objects.get(id=id)
     if link is not None:
         link.delete()
@@ -232,7 +249,8 @@ def file_node(request, id):
         ctx['path'] = id
         ctx['file'] = os.path.basename(id)
         ctx['node'] = os.stat(id)
-        ctx = group_links(get_links(ctx, id, 'file'))
+        ctx = group_links(get_links(request.user, ctx, id, 'file'))
+        ctx = get_parent_links(request.user, ctx, id, 'file')
 
         from mimetypes import MimeTypes
         mime = MimeTypes()

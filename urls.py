@@ -29,6 +29,7 @@ urlpatterns = [
 	url(r'^add', views.add_node),
 
 	url(r'^text/(?P<id>\d+)', views.text_node),
+	url(r'^url/(?P<id>[0-9a-fA-F]{32})/remove', views.delete_node),
 	url(r'^url/(?P<id>[0-9a-fA-F]{32})', views.url_node),
 
 	url(r'^file/raw/(?P<id>.+)', views.open_file),
