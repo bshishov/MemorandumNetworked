@@ -27,8 +27,8 @@ def get_links(user, context, identifier, provider='text'):
 
 def get_parent_links(user, context, identifier, provider='text'):
     context['parent_links'] = []
-    nodes = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider2='text')]
-    urls = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider2='url')]
+    nodes = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider1='text')]
+    urls = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider1='url')]
     context['parent_links'] += list(Node.objects.filter(user=user, id__in=nodes))
     context['parent_links'] += list(Url.objects.filter(user=user, url_hash__in=urls))
     if provider == 'file' and identifier != '/':
@@ -205,7 +205,18 @@ def add_node(request):
 @require_login(url='/')
 def download_file(request, id):
     if os.path.isdir(id):
-        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+        folder_name = id.split(os.sep)[-2]
+        arch_name = '/tmp/%s.zip' % folder_name
+        create_zip(id, arch_name)
+        response = HttpResponse(content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % folder_name
+        response['X-Sendfile'] = folder_name
+        f = open(arch_name, 'rb')
+        response.write(f.read())
+        f.close()
+        # It's usually a good idea to set the 'Content-Length' header too.
+        # You can also set any other required headers: Cache-Control, etc.
+        return response
     else:
         response = HttpResponse(content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename="%s"' % get_filename(id)
@@ -301,3 +312,14 @@ def make_relation_back(user, link, relation_back):
 
 def test(request):
     return HttpResponse('ok')
+
+def create_zip(basedir, archivename):
+    from zipfile import ZipFile, ZIP_DEFLATED
+    assert(os.path.isdir(basedir))
+    with ZipFile(archivename, "w", ZIP_DEFLATED) as z:
+        for root, dirs, files in os.walk(basedir):
+            #NOTE: ignore empty directories
+            for fn in files:
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
+                z.write(absfn, zfn)
