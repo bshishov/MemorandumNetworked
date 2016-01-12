@@ -7,11 +7,15 @@
 <script>
     $(document).ready(function(){
         var path = "/file/raw/{{path|urlencode}}";
-        $('#editor').load(path, function(){
+
+        $.ajax({
+          url: path,          
+          success: function(data) {
             var modelist = ace.require("ace/ext/modelist");                       
             var mode = modelist.getModeForPath('{{path}}').mode;
 
             var editor = ace.edit("editor");           
+            editor.getSession().setValue(data);
 
             editor.setTheme("ace/theme/github");
             editor.getSession().setMode(mode);
@@ -19,7 +23,8 @@
             editor.setOption("minLines", 10);
             editor.setOption("maxLines", 40);
             editor.setOption("scrollPastEnd", true);
-        });
+          },          
+        });       
     });   
 </script>
 {% endblock %}
