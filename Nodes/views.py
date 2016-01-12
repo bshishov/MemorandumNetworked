@@ -283,8 +283,8 @@ def file_node(request, id):
 
         if ctx['mime'] in settings.EDITABLE_FILE_TYPES:
             return render(request, 'Files/text.html', ctx)
-            
-        return render(request, 'file_node.html' % base_type, ctx)
+
+        return render(request, 'file_node.html', ctx)
     else:
         raise Http404
 
