@@ -14,10 +14,10 @@
         <div class="col m5 s12">            
             {% if file %}
             <div class="chip">{{ node.st_size|filesizeformat }}</div>
-            <div class="chip">{{ node.st_mtime|fromtimestamp|date:"D d M Y" }}</div>            
+            <div class="chip">{{ node.st_mtime|fromtimestamp }}</div>            
             <div class="chip tooltipped" data-tooltip="{{ mime }}">{{ mime|truncatechars:20 }}</div>
             {% else %}
-            <div class="chip">{{ node.st_mtime|fromtimestamp|date:"D d M Y" }}</div>
+            <div class="chip">{{ node.st_mtime|fromtimestamp }}</div>
             {% endif %}
         </div>
         <div class="col m7 s12 right-align">           

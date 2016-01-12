@@ -7,6 +7,7 @@ import os
 
 from Nodes.models import Node, Link, Url
 from helpers import *
+from django.conf import settings
 
 def get_links(user, context, identifier, provider='text'):
     context['links'] = list(Link.objects.filter(user=user, node1=identifier))
@@ -272,10 +273,18 @@ def file_node(request, id):
         if ctx['mime'] is None:
             ctx['mime'] = 'text/binary'
         base_type = ctx['mime'].split('/')[0]
-        if os.path.isdir(id) or base_type not in managed_mimes:
-            return render(request, 'file_node.html', ctx)
-        else:
-            return render(request, 'Files/%s.html' % base_type, ctx)
+        
+        # TODO: folder view
+        if os.path.isdir(id):
+            return render(request, 'file_node.html', ctx)      
+
+        if base_type in managed_mimes:
+            return render(request, 'Files/%s.html' % base_type, ctx) 
+
+        if ctx['mime'] in settings.EDITABLE_FILE_TYPES:
+            return render(request, 'Files/text.html', ctx)
+            
+        return render(request, 'file_node.html' % base_type, ctx)
     else:
         raise Http404
 
