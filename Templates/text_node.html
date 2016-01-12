@@ -13,9 +13,42 @@
         <a class="waves-effect btn-flat" href="javascript://" id="save-button"><i class="material-icons left">save</i> Save</a>
         <a class="waves-effect btn-flat" href="javascript://"><i class="material-icons left">delete</i> Delete</a></div> 
     <script type="text/javascript">
-        $('#text-content').trumbowyg({
-            autogrow: true
+        var saved = true;
+        var editor = new MediumEditor('#text-content', {
+            toolbar: { 
+                 buttons: ['bold', 'italic', 'underline', 'anchor', 'h2', 'h3', 'quote', 'orderedlist', 'unorderedlist'],
+            },
+            placeholder: {                
+                text: 'Type your text'
+            },
+            autoLink: true
         });
+        editor.subscribe('editableInput', function (event, editable) {
+            saved = false;            
+        });
+        var checkAndSave = function() {            
+            if(!saved) {
+                $("#text-field").val($("#text-content").html());
+                var data = $("#text-form").serialize();
+
+                $.ajax({
+                  type: "POST",
+                  url: "",
+                  data: data,
+                  success: function() { 
+                    Materialize.toast('Saved', 1000);
+                    saved = true;
+                  },                  
+                  error: function() { 
+                    Materialize.toast('Error', 1000);
+                    console.log(data);
+                  },        
+                });
+            }
+            setTimeout(checkAndSave, 10000);
+        };
+        setTimeout(checkAndSave, 10000);
+
         $("#save-button").on("click", function(){
             $("#text-field").val($("#text-content").html());
             $("#text-form").submit();   

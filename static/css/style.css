@@ -19,6 +19,10 @@ body {
     color: #CCC;
 }
 
+.formatted-text {
+    padding: 4px 20px;
+}
+
 .formatted-text ul {
     list-style-type: disc;
     padding-left:2em;

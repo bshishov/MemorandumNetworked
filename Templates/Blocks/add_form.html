@@ -36,15 +36,15 @@
 </div>
 
 <script type="text/javascript">
-    $('#form-text-field').trumbowyg({
-        autogrow: true,             
-        btns: ['formatting',
-          '|', 'btnGrp-design',
-          '|', 'link',
-          '|', 'insertImage',
-          '|', 'btnGrp-justify',
-          '|', 'btnGrp-lists']
-    });        
+    var formEditor = new MediumEditor('#form-text-field', {
+        toolbar: { 
+             buttons: ['bold', 'italic', 'underline', 'anchor', 'h1', 'h2', 'h3', 'quote', 'orderedlist', 'unorderedlist'],
+        },
+        placeholder: {                
+            text: 'Type your text'
+        },
+        autoLink: true
+    });
 </script>
 
 <div id="urlform" class="modal">
