@@ -24,29 +24,26 @@ def get_links(user, context, identifier, provider='text'):
                 else:
                     new_item.relation = 'file'
                 context['links'].append(new_item)
-    return context
+    return describe_raw_links(context, 'links')
 
 def get_parent_links(user, context, identifier, provider='text'):
-    context['parent_links'] = []
-    nodes = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider1='text')]
-    urls = [l.node1 for l in Link.objects.filter(user=user, node2=identifier, provider1='url')]
-    context['parent_links'] += list(Node.objects.filter(user=user, id__in=nodes))
-    context['parent_links'] += list(Url.objects.filter(user=user, url_hash__in=urls))
+    context['parent_links'] = list(Link.objects.filter(user=user, node2=identifier, provider2=provider))
     if provider == 'file' and identifier != '/':
-        context['parent_links'].append(os.path.abspath(os.path.join(identifier, os.pardir)))
-    return context
+        new_item = Link(user=user, node1=os.path.abspath(os.path.join(identifier, os.pardir)), provider1='file', node2=identifier, provider2='file', relation='folder')
+        context['parent_links'].append(new_item)
+    return describe_raw_links(context, 'parent_links')
 
-def get_links_descriptions(context):
+def describe_raw_links(context, array_identifier):
     int_ids = []
     url_ids = []
-    for link in context['links']:
+    for link in context[array_identifier]:
         if try_parse_int(link.node2) is not None:
             int_ids.append(link.node2)
         if link.provider2 == 'url':
             url_ids.append(link.node2)
     linked_nodes = Node.objects.filter(id__in=int_ids)
     linked_urls = Url.objects.filter(url_hash__in=url_ids)
-    for link in context['links']:
+    for link in context[array_identifier]:
         if link.provider2 == 'text':
             connected_id = try_parse_int(link.node2)
             if connected_id is None:
@@ -73,7 +70,6 @@ def get_links_descriptions(context):
     return context
 
 def group_links(context):
-    context = get_links_descriptions(context)
     groups = {}
     for link in context['links']:
         groups.setdefault(link.relation, 0)
