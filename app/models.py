@@ -46,7 +46,7 @@ class Profile(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    home = models.ForeignKey('nodes.Node', blank=True, null=True)
+    home = models.ForeignKey('app.Node', blank=True, null=True)
     is_active = models.BooleanField("Is active", default=True)
     is_admin = models.BooleanField("Is admin", default=False)
     date_joined = models.DateTimeField("Date joined", auto_now=True)

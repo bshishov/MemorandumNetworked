@@ -4,7 +4,7 @@ from django.shortcuts import redirect, get_list_or_404, get_object_or_404
 import json
 import os
 
-from nodes.models import Node, Link, Url
+from app.models import Node, Link, Url
 from helpers import *
 from django.conf import settings
 from django.shortcuts import render
@@ -96,7 +96,7 @@ def unlinked(request):
     node_links = list(Link.objects.filter(user=request.user, provider2='text').values_list('node2', flat=True))
     node_links.append(str(home_id))
     url_links = Link.objects.filter(user=request.user, provider2='url').values_list('node2', flat=True)
-    ctx['nodes'] = Node.objects.filter(user=request.user).exclude(id__in=node_links)
+    ctx['app'] = Node.objects.filter(user=request.user).exclude(id__in=node_links)
     ctx['urls'] = Url.objects.filter(user=request.user).exclude(url_hash__in=url_links)
     return render(request, 'node.html', ctx)
 

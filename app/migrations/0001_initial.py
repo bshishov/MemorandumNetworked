@@ -66,6 +66,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='home',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='nodes.Node'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='app.Node'),
         ),
     ]

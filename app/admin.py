@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from nodes.views import Node, Link, Url
+from app.views import Node, Link, Url
 
 class NodeAdmin(admin.ModelAdmin):
 	list_display = ('id', 'user', 'text', 'date_added')
