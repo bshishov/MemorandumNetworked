@@ -1,7 +1,0 @@
-{% extends '../file_node.html' %}
-
-{% block file_content %}
-<audio controls>
-    <source src="/file/raw/{{path|urlencode}}" type="{{mime}}">
-</audio>
-{% endblock %}

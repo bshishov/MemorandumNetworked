@@ -1,0 +1,105 @@
+body {
+    background: #efefef;
+}
+
+.wrapper {    
+    max-width: 1000px;
+    margin: 0 auto;    
+}
+
+.content {
+    margin: 10px;
+}
+
+.node_content {    
+}
+
+.logo a {
+    font-size: 18pt;
+    color: #CCC;
+}
+
+.card .formatted-text {
+    padding: 4px 20px;
+}
+
+.formatted-text ul {
+    list-style-type: disc;
+    padding-left:2em;
+    margin-left:0;
+}
+
+.formatted-text ol {    
+    padding-left:2em;
+    margin-left:0;
+}
+
+
+.formatted-text ul li {
+    list-style-type: disc;
+}
+
+
+.links {
+
+}
+
+.link {    
+    cursor: pointer;
+}
+
+.link .link-details {
+    color: #888;
+}
+
+.link .link-icon .circle {
+    width: 22px;
+    height: 22px;    
+}
+
+.link .link-icon i.circle {
+    font-size: 14px;
+    line-height: 22px;        
+    color: #fff;
+    background-color: #999;
+    text-align: center;    
+}
+
+.trumbowyg-box {
+    width: 100%;
+    margin: 0; 
+}
+
+.card .trumbowyg-box {
+    width: 100%;
+    margin: 0;    
+    min-height: 0 !important;
+}
+
+.card .trumbowyg-editor {
+    min-height: 0 !important;
+}
+
+.add_buttons {
+    /*background: #ddd;    */
+    border-radius: 10px; 
+    padding: 20px 7px 2px 7px;   
+    line-height: 10px;
+    font-size: 10px;
+}
+
+.add_buttons a {
+    color: #AAA;
+}
+
+ #editor { 
+        position: relative;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+
+.image-file div {
+    display: inline-block;   
+}

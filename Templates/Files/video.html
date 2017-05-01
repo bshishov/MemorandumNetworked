@@ -1,9 +1,0 @@
-{% extends 'file_node.html' %}
-
-{% block file_content %}
-<div class="center-align">
-    <video class="responsive-video" controls>
-        <source src="/file/raw/{{path|urlencode}}" type="{{mime}}">
-    </video>
-</div>
-{% endblock %}

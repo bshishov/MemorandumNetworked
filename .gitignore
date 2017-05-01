@@ -58,5 +58,12 @@ docs/_build/
 # PyBuilder
 target/
 
+
 local_settings.py
-/files/static/
+
+.idea/
+mysql.conf
+devenv/
+reports/
+/media/
+/static/

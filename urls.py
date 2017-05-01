@@ -13,34 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
-from django.conf import settings
-from django.conf.urls.static import static
-from Nodes import views
 
 urlpatterns = [
-	url(r'^$', views.index),
-	url(r'^login', views.login),
-	url(r'^logout', views.logout),
-
-	url(r'^unlinked', views.unlinked),
-
-	url(r'^add', views.add_node),
-
-	url(r'^text/(?P<id>\d+)', views.text_node),
-	url(r'^url/(?P<id>[0-9a-fA-F]{32})/remove', views.delete_node),
-	url(r'^url/(?P<id>[0-9a-fA-F]{32})', views.url_node),
-
-	url(r'^file/raw/(?P<id>.+)', views.open_file),
-	url(r'^file/download/(?P<id>.+)', views.download_file),
-	url(r'^file/(?P<id>.+)', views.file_node),
-
-	url(r'^links/(?P<id>\d+)/remove', views.delete_link),
-	url(r'^links/(?P<id>\d+)', views.link),
-
     url(r'^admin/', admin.site.urls),
-    url(r'^test/', views.test),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    url(r'^', include('nodes.urls')),
+]

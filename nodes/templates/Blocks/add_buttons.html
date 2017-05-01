@@ -1,0 +1,22 @@
+<span class="add_buttons">
+    <a class="modal-trigger" title="Add text note" href="#textform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+        <i class="material-icons">note_add</i>
+    </a>
+
+    <a class="modal-trigger" title="Add URL" href="#urlform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+        <i class="material-icons">link</i>
+    </a>  
+
+    <a class="modal-trigger" title="Add Files" href="#fileform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+        <i class="material-icons">insert_drive_file</i>
+    </a>
+
+    <a class="modal-trigger" title="Create folder" href="#folderform" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+        <i class="material-icons">folder</i>
+    </a>    
+
+    <a class="modal-trigger" title="Link another node" href="#!" onclick="setRelation('{% if relation %}{{relation}}{%endif%}');">
+        <i class="material-icons">search</i>
+    </a>  
+</span>
+

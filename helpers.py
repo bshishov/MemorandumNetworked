@@ -1,13 +1,14 @@
 # coding: utf-8
 from django.http import HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 
 import json
+
 
 def get_int_param(request, param_name):
     param_name = request.query_params.get(param_name)
     return int(param_name) if param_name else 0
+
 
 def try_parse_int(s, base=10, val=None):
     try:
@@ -15,11 +16,10 @@ def try_parse_int(s, base=10, val=None):
     except ValueError:
         return val
 
-def render(request, path, context = {}):
-    return render_to_response(path, context, RequestContext(request))
 
 def render_json(context):
-    return HttpResponse(json.dumps(context), content_type = 'application/json')
+    return HttpResponse(json.dumps(context), content_type='application/json')
+
 
 def require_post(function=None, url='/'):
     def _decorator(view_function):
@@ -40,6 +40,7 @@ def require_post(function=None, url='/'):
         return _decorator(function)
     return _decorator
 
+
 def require_login(function=None, url='/'):
     def _decorator(view_function):
         def _view(request, *args, **kwargs):
@@ -58,6 +59,7 @@ def require_login(function=None, url='/'):
         return _decorator(function)
     return _decorator
 
+
 def unauthenticated_only(function=None, url='/'):
     def _decorator(view_function):
         def _view(request, *args, **kwargs):
@@ -75,6 +77,7 @@ def unauthenticated_only(function=None, url='/'):
     if function:
         return _decorator(function)
     return _decorator
+
 
 def get_filename(path):
     import os

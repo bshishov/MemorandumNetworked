@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="row">
+        {% include 'Blocks/parent_links.html' %}
+    </div>
+    <div class="row">        
+        {% block node_content %}{% endblock %}                
+    </div>
+    <div class="row">
+        {% include 'Blocks/links.html' %}
+    </div>
+    {% include 'Blocks/add_form.html' %}
+{% endblock %}

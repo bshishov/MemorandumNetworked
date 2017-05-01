@@ -1,0 +1,41 @@
+{% for key,items in links.items %}       
+<div class="section">
+    {% if key != 'ungrouped' %}
+        <h5>{{ key|capfirst }}{{ items|length|pluralize }}
+        {% include 'Blocks/add_buttons.html' with relation=key %}</h5>
+    {% else %}
+        {% include 'Blocks/add_buttons.html' %}
+    {% endif %}
+    {%if items%}   
+        <ul class="collection z-depth-1"> 
+        {% for item in items %}
+            <li class="collection-item row link" data-path="/{{ item.provider2 }}/{{ item.node2|urlencode }}">
+                <div class="col m2 s11 link-icon">    
+                     {% if item.provider2 == "file" %}
+                        <i class="material-icons tiny left circle red">insert_drive_file</i>
+                        {% elif item.provider2 == "text" %}
+                        <i class="material-icons tiny left circle green">description</i>
+                        {% elif item.provider2 == "url" %}
+                        <i class="material-icons tiny left circle blue">link</i>
+                        {% else %}
+                        <i class="material-icons tiny left circle teal">message</i>
+                        {% endif %}            
+                    <STRONG>{{ item.relation|capfirst }}</STRONG>    
+                </div>                               
+                <div class="col m9 s11 link-content">                    
+                    {% with template_name=item.provider2|stringformat:"s"|add:".html" %}
+                        <!-- Blocks/Widgets/{{template_name}} -->
+                        {% include "Blocks/Widgets/"|add:template_name %}
+                    {% endwith %}                                
+                </div>  
+                <div class="col s1 m1">
+                    {% if item.id %}
+                    <a href="/links/{{ item.id }}/remove" title="Unlink" class="secondary-content"><i class="material-icons tiny">remove_circle_outline</i></a>
+                    {% endif %} 
+                </div>                
+            </li>
+        {% endfor %}
+        </ul>        
+    {% endif %}  
+</div>      
+{% endfor %}

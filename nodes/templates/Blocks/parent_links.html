@@ -1,0 +1,6 @@
+{% if parent_links %}
+    > 
+    {% for link in parent_links %}
+        <a href="/{{link.provider1}}/{{link.node1}}">/{{link.provider1}}/{{link.node1}}</a>  
+    {% endfor %}
+{% endif %}

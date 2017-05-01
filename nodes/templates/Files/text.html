@@ -1,0 +1,30 @@
+{% extends 'file_node.html' %}
+
+{% block file_content %}
+<div id="editor"></div>
+<script src="/static/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/ace/ext-modelist.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    $(document).ready(function(){
+        var path = "/file/raw/{{path|urlencode}}";
+
+        $.ajax({
+          url: path,
+          dataType: "text",
+          success: function(data) {
+            var modelist = ace.require("ace/ext/modelist");                       
+            var mode = modelist.getModeForPath('{{path}}').mode;            
+            var editor = ace.edit("editor");           
+            editor.setTheme("ace/theme/github");
+            editor.getSession().setValue(data, -1);
+            editor.getSession().setMode(mode);
+            editor.setAutoScrollEditorIntoView(true);
+            editor.setOption("minLines", 10);
+            editor.setOption("maxLines", 40);
+            editor.setOption("scrollPastEnd", true);            
+            editor.$blockScrolling = Infinity;
+          },          
+        });       
+    });   
+</script>
+{% endblock %}
