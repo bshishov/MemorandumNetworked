@@ -1,3 +1,6 @@
-Django
-beautifulsoup4
-urllib3
+beautifulsoup4==4.7.1
+dj-database-url==0.5.0
+Django==2.1.5
+pytz==2018.9
+soupsieve==1.7.2
+urllib3==1.24.1

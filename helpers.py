@@ -25,7 +25,6 @@ def require_post(function=None, url='/'):
     def _decorator(view_function):
         def _view(request, *args, **kwargs):
             if request.method == 'POST':
-                #do some before the view is reached stuffs here.
                 return view_function(request, *args, **kwargs)
             else:
                 return redirect(url)
@@ -44,7 +43,7 @@ def require_post(function=None, url='/'):
 def require_login(function=None, url='/'):
     def _decorator(view_function):
         def _view(request, *args, **kwargs):
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 return view_function(request, *args, **kwargs)
             else:
                 return redirect(url)
@@ -63,7 +62,7 @@ def require_login(function=None, url='/'):
 def unauthenticated_only(function=None, url='/'):
     def _decorator(view_function):
         def _view(request, *args, **kwargs):
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return view_function(request, *args, **kwargs)
             else:
                 return redirect(url)

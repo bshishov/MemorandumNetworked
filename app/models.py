@@ -46,7 +46,7 @@ class Profile(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    home = models.ForeignKey('app.Node', blank=True, null=True)
+    home = models.ForeignKey('app.Node', blank=True, null=True, on_delete=models.SET_NULL)
     is_active = models.BooleanField("Is active", default=True)
     is_admin = models.BooleanField("Is admin", default=False)
     date_joined = models.DateTimeField("Date joined", auto_now=True)
@@ -92,13 +92,13 @@ class Profile(AbstractBaseUser):
 
 
 class Node(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 
 
 class Url(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     url_hash = models.CharField(max_length=32, unique=True)
     url = models.CharField(max_length=1000)
     name = models.CharField(max_length=1000)
@@ -107,7 +107,7 @@ class Url(models.Model):
 
 
 class Link(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     node1 = models.CharField(max_length=1000)
     node2 = models.CharField(max_length=1000)
     provider1 = models.CharField(max_length=100)
